@@ -2,6 +2,7 @@ import React, {useState} from 'react';
 import LogOutButton from '../LogOutButton/LogOutButton';
 import {useSelector, useDispatch} from 'react-redux';
 import Meeboard from '../Meeboard/Meeboard';
+import VoiceRecorder from '../VoiceRecorder/VoiceRecorder';
 
 
 function UserPage() {
@@ -35,6 +36,7 @@ function UserPage() {
     </button>
     {loading && <p>Uploading...</p>}
     {error && <p>Error: {error}</p>}
+    <VoiceRecorder />
     <Meeboard />
   </div>
   </>
