@@ -9,6 +9,12 @@ const passport = require('./strategies/user.strategy');
 
 // Route includes
 const userRouter = require('./routes/user.router');
+const uploadRouter = require('./routes/upload.router')
+
+//These lines configure middleware in express to handle incoming 
+//JSON data and URL-encoded form data from client requests.
+app.use(express.json())
+app.use(express.urlencoded({ extended: false }))
 
 // Body parser middleware
 app.use(bodyParser.json());
@@ -23,6 +29,7 @@ app.use(passport.session());
 
 /* Routes */
 app.use('/api/user', userRouter);
+app.use('/api/upload', uploadRouter);
 
 // Serve static files
 app.use(express.static('build'));
