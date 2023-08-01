@@ -1,0 +1,172 @@
+.meeboard-container {
+    display: grid;
+    grid-template: repeat(13, 1fr) / repeat(26, 1fr);
+    width: 80vw;
+    height: 50vh;
+    background-color: pink;
+}
+
+.audio-element {
+    display: none;
+}
+
+/* white keys */
+.key-one,
+.key-three,
+.key-five,
+.key-six,
+.key-eight,
+.key-ten,
+.key-twelve,
+.key-thirteen {
+    background-color: beige;
+}
+
+/* black keys */
+.key-two,
+.key-four,
+.key-seven,
+.key-nine,
+.key-eleven {
+    background-color: black;
+    z-index: 1;
+    /* make the black keys overlap*/
+}
+
+
+.key-one,
+.key-two,
+.key-three,
+.key-four,
+.key-five,
+.key-six,
+.key-seven,
+.key-eight,
+.key-nine,
+.key-ten,
+.key-eleven,
+.key-twelve,
+.key-thirteen {
+    display: grid;
+    cursor: pointer;
+    border-radius: 5px;
+    box-shadow: 0 1px #999;
+}
+
+.key-one,
+.key-two,
+.key-three,
+.key-four,
+.key-five,
+.key-six,
+.key-seven,
+.key-eight,
+.key-nine,
+.key-ten,
+.key-eleven,
+.key-twelve,
+.key-thirteen:active {
+    box-shadow: 0 1px #999;
+    transform: translateY(1px);
+}
+
+.record-button,
+.stop-button,
+.play-button,
+.pause-button,
+.upload-button {
+    display: grid;
+    justify-content: center;
+    background: none;
+    border: none; 
+    font-size: large;
+}
+
+.record-button,
+.stop-button {
+    grid-area: 2/2/span 1/span 3;
+}
+
+.play-button,
+.pause-button {
+    grid-area: 2/5/span 1/span 3;
+}
+
+.upload-button {
+    grid-area: 2/8/span 1/span 3;
+}
+
+.key-one {
+    grid-area: 4/2/span 9/span 3;
+}
+
+.key-two {
+    grid-area: 4/4/span 5/span 2;
+}
+
+.key-three {
+    grid-area: 4/5/span 9/span 3;
+}
+
+.key-four {
+    grid-area: 4/7/span 5/span 2;
+}
+
+.key-five {
+    grid-area: 4/8/span 9/span 3;
+}
+
+.key-six {
+    grid-area: 4/11/span 9/span 3;
+}
+
+.key-seven {
+    grid-area: 4/13/span 5/span 2;
+}
+
+.key-eight {
+    grid-area: 4/14/span 9/span 3;
+}
+
+.key-nine {
+    grid-area: 4/16/span 5/span 2;
+}
+
+.key-ten {
+    grid-area: 4/17/span 9/span 3;
+}
+
+.key-eleven {
+    grid-area: 4/19/span 5/span 2;
+}
+
+.key-twelve {
+    grid-area: 4/20/span 9/span 3;
+}
+
+.key-thirteen {
+    grid-area: 4/23/span 9/span 3;
+}
+
+.meeboard-container button:active {
+    box-shadow: 0 1px #999;
+    transform: translateY(1px);
+}
+
+.pressed {
+    animation: click-animation 0.2s linear;
+}
+
+@keyframes click-animation {
+    0% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(0.9);
+    }
+
+    100% {
+        transform: scale(1);
+    }
+}
