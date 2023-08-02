@@ -1,116 +1,93 @@
-import React, { Component } from "react";
+import React, { useState } from "react";
 import AudioAnalyser from "react-audio-analyser";
+import { useSelector } from "react-redux";
+import { useEffect } from "react";
 
 
-export default class AudioRecorder extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            status: ""
-        };
-    }
+const AudioRecorder = () => {
+    const [status, setStatus] = useState("");
+    const [audioBlob, setAudioBlob] = useState(null);
+    const [audioType, setAudioType] = useState("audio/wav");
+    const userId = useSelector((state) => state.user.id);
 
-    controlAudio(status) {
-        this.setState({
-            status
-        });
-    }
+    const controlAudio = (status) => {
+        setStatus(status);
+      };
+    
+      const changeScheme = (e) => {
+        setAudioType(e.target.value);
+      };
 
-    changeScheme(e) {
-        this.setState({
-            audioType: e.target.value
-        });
-    }
+      const handleStop = (audioData) => {
+        setAudioBlob(audioData.audioBlob);
+        setStatus("inactive");
+        console.log("succ stop", audioData);
+      };
 
-    componentDidMount() {
-        this.setState({
-            audioType: "audio/wav"
-        });
-    }
-
-    async uploadAudio() {
-        const { audioBlob, sampleName, userId } = this.state;
-        console.log('userId is: ', userId)
+    const uploadAudio = async () => {
+        console.log("userId is:", userId);
         if (!audioBlob) return;
-
+    
         const formData = new FormData();
-        formData.append('sample_name', sampleName); 
-        formData.append('user_id', userId); 
-        formData.append('audiofile', audioBlob, 'audio.wav');
+        formData.append("sample_name", "your_sample_name"); // Replace with your sample name
+        formData.append("user_id", userId);
+        formData.append("audiofile", audioBlob, "audio.wav");
+    
+        //const response = await axios.post('/api/upload', formData);
+        const response = await fetch("/api/upload", { body: formData, method: "post" });
+        // Handle the response as needed
+      };
 
-        //const response = await axios.post('/api/upload', formData); 
-        const response = await fetch('/api/upload', { body: formData, method: 'post' });
-        //debugger
-    }
+      const audioProps = {
+        audioType,
+        status,
+        //audioSrc,
+        timeslice: 1000, // timeslice（https://developer.mozilla.org/en-US/docs/Web/API/MediaRecorder/start#Parameters）
+        startCallback: (e) => {
+          console.log("succ start", e);
+        },
+        pauseCallback: (e) => {
+          console.log("succ pause", e);
+        },
+        stopCallback: (e) => {
+          //setAudioSrc(window.URL.createObjectURL(e));
+          setAudioBlob(e);
+          setStatus("inactive");
+          console.log("succ stop", e);
+        },
+        onRecordCallback: (e) => {
+          console.log("recording", e);
+        },
+        errorCallback: (err) => {
+          console.log("error", err);
+        },
+      };
 
-    // async uploadAudio() {
-    //     const { audioBlob, sampleName } = this.state;
-    //     const userId = this.props.userId; // Assuming you have userId passed as a prop
-      
-    //     if (!audioBlob || !userId) {
-    //       // Make sure the required data is available before proceeding
-    //       return;
-    //     }
-      
-    //     const formData = new FormData();
-    //     formData.append('sample_name', sampleName);
-    //     formData.append('user_id', userId); // Insert the user's ID
-    //     formData.append('audiofile', audioBlob, 'audio.wav');
-      
-    //     const response = await fetch('/api/upload', { body: formData, method: 'post' });
-    //     // Handle the response as needed
-    //   }
+        useEffect(() => {
+            setAudioType("audio/wav");
+          }, []);
 
-    render() {
-        const { status, audioSrc, audioType } = this.state;
-        const audioProps = {
-            audioType,
-            // audioOptions: {sampleRate: 30000}, // 设置输出音频采样率
-            status,
-            audioSrc,
-            timeslice: 1000, // timeslice（https://developer.mozilla.org/en-US/docs/Web/API/MediaRecorder/start#Parameters）
-            startCallback: e => {
-                console.log("succ start", e);
-            },
-            pauseCallback: e => {
-                console.log("succ pause", e);
-            },
-            stopCallback: e => {
-
-                this.setState({
-                    audioSrc: window.URL.createObjectURL(e),
-                    audioBlob: e
-                });
-
-                console.log("succ stop", e);
-            },
-            onRecordCallback: e => {
-                console.log("recording", e);
-            },
-            errorCallback: err => {
-                console.log("error", err);
-            }
-        };
         return (
             <div>
-                <AudioAnalyser {...audioProps}>
+                {/* <AudioAnalyser {...audioProps}> */}
+                <AudioAnalyser {...audioProps} controlAudio={controlAudio}>
                     <div className="btn-box">
                         <button
                             className="btn"
-                            onClick={() => this.controlAudio("recording")}
+                            onClick={() => controlAudio("recording")}
                         >
                             Start
                         </button>
-                        <button className="btn" onClick={() => this.controlAudio("paused")}>
+                        <button className="btn" onClick={() => controlAudio("paused")}>
                             Pause
                         </button>
                         <button
                             className="btn"
-                            onClick={() => this.controlAudio("inactive")}
+                            onClick={() => controlAudio("inactive")}
                         >
                             Stop
                         </button>
-                        <button className="btn" onClick={() => this.uploadAudio()}>
+                        <button className="btn" onClick={uploadAudio}>
                             Upload
                         </button>
                     </div>
@@ -119,7 +96,7 @@ export default class AudioRecorder extends Component {
                 <select
                     name=""
                     id=""
-                    onChange={e => this.changeScheme(e)}
+                    onChange={changeScheme}
                     value={audioType}
                 >
                     <option value="audio/webm">audio/webm（default）</option>
@@ -129,4 +106,6 @@ export default class AudioRecorder extends Component {
             </div>
         );
     }
-}
+
+
+export default AudioRecorder;
