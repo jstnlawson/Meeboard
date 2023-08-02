@@ -1,93 +1,9 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef } from 'react';
+//import AudioAnalyser from "react-audio-analyser";
+import AudioRecorder from '../AudioRecorder/AudioRecorder';
 import './AllTheParts.css';
 
 function AllTheParts() {
-
-    //Media Recorder from Web Media API
-    const [audioURL, setAudioURL] = useState('');
-    const [isRecording, setIsRecording] = useState(false);
-    const [isPlaying, setIsPlaying] = useState(false);
-    const [recordedBlob, setRecordedBlob] = useState(null);
-    const mediaRecorder = useRef(null);
-    const audioRef = useRef(null);
-
-
-    const startRecording = async () => {
-        try {
-            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-            mediaRecorder.current = new MediaRecorder(stream);
-            const chunks = [];
-
-            mediaRecorder.current.ondataavailable = (e) => {
-                chunks.push(e.data);
-            };
-
-            mediaRecorder.current.onstop = () => {
-                const blob = new Blob(chunks, { type: 'audio/wav' });
-                setRecordedBlob(blob);
-            };
-
-            mediaRecorder.current.start();
-            setIsRecording(true);
-        } catch (err) {
-            console.error('Error accessing microphone:', err);
-        }
-    };
-
-    const stopRecording = () => {
-        if (mediaRecorder.current && mediaRecorder.current.state === 'recording') {
-            mediaRecorder.current.stop();
-            setIsRecording(false);
-        }
-    };
-
-    const togglePlayback = () => {
-        if (!recordedBlob || !audioRef.current) return;
-
-        if (isPlaying) {
-            audioRef.current.pause();
-        } else {
-            audioRef.current.play().catch((error) => {
-                // Handle any errors that may occur during playback (e.g., autoplay policies)
-                console.error('Error during playback:', error);
-            });
-        }
-
-        setIsPlaying(!isPlaying);
-    };
-
-    const createOrRevokeObjectURL = (blob) => {
-        if (audioURL) {
-            URL.revokeObjectURL(audioURL);
-        }
-        setAudioURL(URL.createObjectURL(blob));
-    };
-
-    const playPauseButton = isPlaying ? (
-        <button className='pause-button' onClick={togglePlayback} disabled={!recordedBlob}>
-            ⏸
-        </button>
-    ) : (
-        <button className='play-button' onClick={togglePlayback} disabled={!recordedBlob}>
-            ▶️
-        </button>
-    );
-
-    useEffect(() => {
-        // Check if there is a recordedBlob
-        if (recordedBlob) {
-            // Call the createOrRevokeObjectURL function to create or revoke the URL
-            createOrRevokeObjectURL(recordedBlob);
-        }
-        // Add recordedBlob as a dependency to the useEffect so that it runs whenever recordedBlob changes
-    }, [recordedBlob]);
-
-    const audioElement = audioURL ? (
-        <audio ref={audioRef} controls>
-            <source src={audioURL} type="audio/wav" className='audio-element' />
-            Your browser does not support the audio element.
-        </audio>
-    ) : null;
 
     //Meeboard stuff
 
@@ -191,14 +107,16 @@ function AllTheParts() {
 
     return (
         <>
+            <AudioRecorder />
             <div className="meeboard-container">
 
-                {!isRecording ? (
-                    <button className='record-button' onClick={startRecording}>🔴</button>
-                ) : (
-                    <button className='stop-button' onClick={stopRecording}>🟥</button>
-                )}
-                {playPauseButton}
+                <button className='record-button'>🔴</button>
+
+                <button className='stop-button' >🟥</button>
+
+                <button className='pause-button'> ⏸</button>
+
+                <button className='play-button'>▶️</button>
 
                 <button className='upload-button'>📂</button>
 
@@ -216,16 +134,7 @@ function AllTheParts() {
                 <button className="key-twelve"></button>
                 <button className="key-thirteen"></button>
             </div>
-            {audioURL && (
-                <audio
-                    ref={audioRef}
-                    controls
-                    className="audio-element"
-                    src={audioURL}
-                    type="audio/wav"
-                >
-                    Your browser does not support the audio element.
-                </audio>)}
+
         </>
 
     )

@@ -1,8 +1,12 @@
 const express = require('express');
 const bodyParser = require('body-parser');
-require('dotenv').config();
+const cors = require('cors'); // Import the 'cors' package
+
+//require('dotenv').config();
 
 const app = express();
+
+app.use(cors()); // Enable CORS for all routes
 
 const sessionMiddleware = require('./modules/session-middleware');
 const passport = require('./strategies/user.strategy');

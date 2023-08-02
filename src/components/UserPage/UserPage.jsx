@@ -7,8 +7,8 @@ import AllTheParts from '../AllTheParts/AllTheParts';
 function UserPage() {
   // this component doesn't do much to start, just renders some user reducer info to the DOM
   const user = useSelector((store) => store.user);
-  const loading = useSelector((state) => state.audio.loading);
-  const error = useSelector((state) => state.audio.error);
+  //const loading = useSelector((state) => state.audio.loading);
+  //const error = useSelector((state) => state.audio.error);
 
   return (<>
     <div className="container">
@@ -17,8 +17,8 @@ function UserPage() {
       <LogOutButton className="btn" />
     </div>
     <div>
-    {loading && <p>Uploading...</p>}
-    {error && <p>Error: {error}</p>}
+    {/* {loading && <p>Uploading...</p>}
+    {error && <p>Error: {error}</p>} */} 
     <AllTheParts />
   </div>
   </>
