@@ -67,5 +67,27 @@ uploadRouter.post('/', upload.single('audiofile'), (req, res) => {
   });
 });
 
+// Add a GET route to fetch user's uploads
+uploadRouter.get('/:id', (req, res) => {
+    const userId = req.params.id;
+  
+    // Retrieve the user's uploads from the "samples" table based on the user_id
+    const selectQuery = `
+      SELECT "id", "sample_name", "audio_URL"
+      FROM "samples"
+      WHERE "user_id" = $1;
+    `;
+  
+    pool.query(selectQuery, [userId])
+      .then((result) => {
+        // Return the user's uploads as JSON
+        return res.json(result.rows);
+      })
+      .catch((err) => {
+        console.error('Error fetching user uploads from the database', err);
+        return res.status(500).json({ error: 'Error fetching user uploads from the database' });
+      });
+  });
+  
 
 module.exports = uploadRouter;

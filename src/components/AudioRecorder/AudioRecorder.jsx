@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import AudioAnalyser from "react-audio-analyser";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useEffect } from "react";
 
 
@@ -10,6 +10,7 @@ const AudioRecorder = () => {
   const [audioType, setAudioType] = useState("audio/wav");
   const [showForm, setShowForm] = useState(false); // manage form visibility
   const [sampleName, setSampleName] = useState("");
+  const dispatch = useDispatch();
   const userId = useSelector((state) => state.user.id);
 
   const controlAudio = (status) => {
@@ -45,6 +46,32 @@ const AudioRecorder = () => {
     const response = await fetch("/api/upload", { body: formData, method: "post" });
     // Handle the response as needed
 
+    // Client-side code to fetch user's uploads and display them
+async function fetchUserUploads(userId) {
+  try {
+    // Make a GET request to the server-side endpoint for user's uploads
+    const response = await fetch(`/api/upload/${userId}`);
+    const data = await response.json();
+
+    // 'data' will contain an array of the user's uploads
+    // You can now use this data to display the samples on the front end
+    // For example, you can map over the data array and create UI elements for each sample
+
+    // Example:
+    data.forEach((upload) => {
+      const sampleName = upload.sample_name;
+      const audioUrl = upload.audio_URL;
+      // Now you can use 'sampleName' and 'audioUrl' to display the sample information
+      // and create audio players to play the audio files.
+    });
+
+  } catch (error) {
+    console.error('Error fetching user uploads', error);
+    // Handle error if needed
+  }
+}
+
+
     // Clear the form after successful upload
     setShowForm(false);
     setSampleName("");
@@ -76,8 +103,9 @@ const AudioRecorder = () => {
   };
 
   useEffect(() => {
+    dispatch({ type: 'FETCH_UPLOADS', payload: userId })
     setAudioType("audio/wav");
-  }, []);
+  }, [dispatch, userId]);
 
   return (
     <div>
@@ -114,7 +142,7 @@ const AudioRecorder = () => {
           <button className="btn" onClick={() => setShowForm(true)}>
             Upload
           </button>
-          <button className="btn">
+          <button>
             My Samples
           </button>
         </div>
