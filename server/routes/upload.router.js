@@ -41,17 +41,12 @@ uploadRouter.post('/', upload.single('audiofile'), (req, res) => {
 
     const audioUrl = data.Location;
 
-    // Save the sample_name, audio_URL, and user_id in the "samples" table
+    
     const insertQuery = `
       INSERT INTO "samples" ("sample_name", "audio_URL", "user_id")
       VALUES ($1, $2, $3)
       RETURNING "id";
     `;
-    // Using RETURNING is especially useful when you have auto-incrementing columns 
-    // (like a SERIAL or IDENTITY column in PostgreSQL) that generate unique values 
-    // for each new row. With RETURNING, you don't need to make an additional query 
-    // to fetch the newly generated ID; it's conveniently returned in the same query 
-    // result.
 
     const insertValues = [sample_name, audioUrl, user_id];
 
@@ -69,19 +64,18 @@ uploadRouter.post('/', upload.single('audiofile'), (req, res) => {
 
 // Add a GET route to fetch user's uploads
 uploadRouter.get('/:id', (req, res) => {
+    //console.log("req.user.id:",req.user.id)
+   // const userId = req.user.id;
     const userId = req.params.id;
-  
-    // Retrieve the user's uploads from the "samples" table based on the user_id
+    
     const selectQuery = `
-      SELECT "id", "sample_name", "audio_URL"
-      FROM "samples"
-      WHERE "user_id" = $1;
+    SELECT * FROM samples WHERE user_id = $1;
     `;
   
     pool.query(selectQuery, [userId])
       .then((result) => {
-        // Return the user's uploads as JSON
-        return res.json(result.rows);
+        res.send(result.rows)
+        //return res.json(result.rows);
       })
       .catch((err) => {
         console.error('Error fetching user uploads from the database', err);

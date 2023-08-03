@@ -12,6 +12,9 @@ const AudioRecorder = () => {
   const [sampleName, setSampleName] = useState("");
   const dispatch = useDispatch();
   const userId = useSelector((state) => state.user.id);
+  const uploads = useSelector((state) => state.uploadReducer);
+
+  console.log('uploads in audioRecorder:', uploads)
 
   const controlAudio = (status) => {
     setStatus(status);

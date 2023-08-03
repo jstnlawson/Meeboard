@@ -1,7 +1,7 @@
  const uploadReducer = (state = [], action) => {
     switch (action.type) {
       case 'SET_UPLOADS':
-        return [ ...state, action.payload]
+        return action.payload;
       default:
         return state;
     }
