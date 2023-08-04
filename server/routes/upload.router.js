@@ -3,7 +3,8 @@ const multer = require('multer');
 const AWS = require('aws-sdk');
 const uploadRouter = express.Router();
 const pool = require('../modules/pool');
-
+//create unique name for uploaded file using uuid
+const { v4: uuidv4 } = require('uuid');
 
 
 
@@ -22,7 +23,8 @@ const upload = multer({
 uploadRouter.post('/', upload.single('audiofile'), (req, res) => {
   const file = req.file;
   const bucket = 'first-audio-bucket';
-  const key = `${Date.now().toString()}-${file.originalname}`;
+  //const key = `${Date.now().toString()}-${file.originalname}`;
+  const key = `${uuidv4()}-${file.originalname}`;
 
   // Extract sample_name and user_id from the request body
   const { sample_name, user_id } = req.body;
@@ -74,8 +76,8 @@ uploadRouter.get('/:id', (req, res) => {
   
     pool.query(selectQuery, [userId])
       .then((result) => {
-        res.send(result.rows)
-        //return res.json(result.rows);
+        //res.send(result.rows)
+        return res.json(result.rows);
       })
       .catch((err) => {
         console.error('Error fetching user uploads from the database', err);

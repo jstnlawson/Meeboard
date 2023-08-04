@@ -8,11 +8,19 @@ const AudioRecorder = () => {
   const [status, setStatus] = useState("");
   const [audioBlob, setAudioBlob] = useState(null);
   const [audioType, setAudioType] = useState("audio/wav");
-  const [showForm, setShowForm] = useState(false); // manage form visibility
+
+  const [showForm, setShowForm] = useState(false); 
+  const [showSamples, setShowSamples] = useState(false); 
+
   const [sampleName, setSampleName] = useState("");
   const dispatch = useDispatch();
   const userId = useSelector((state) => state.user.id);
   const uploads = useSelector((state) => state.uploadReducer);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [audioSrc, setAudioSrc] = useState(null); // Add audioSrc state
+
+
+
 
   console.log('uploads in audioRecorder:', uploads)
 
@@ -27,6 +35,7 @@ const AudioRecorder = () => {
   const handleStop = (audioData) => {
     setAudioBlob(audioData.audioBlob);
     setStatus("inactive");
+
     console.log("succ stop", audioData);
   };
 
@@ -39,51 +48,25 @@ const AudioRecorder = () => {
       setShowForm(true);
       return;
     }
-
     const formData = new FormData();
     formData.append("sample_name", sampleName);
     formData.append("user_id", userId);
     formData.append("audiofile", audioBlob, "audio.wav");
-
-    //const response = await axios.post('/api/upload', formData);
     const response = await fetch("/api/upload", { body: formData, method: "post" });
-    // Handle the response as needed
-
-    // Client-side code to fetch user's uploads and display them
-async function fetchUserUploads(userId) {
-  try {
-    // Make a GET request to the server-side endpoint for user's uploads
-    const response = await fetch(`/api/upload/${userId}`);
-    const data = await response.json();
-
-    // 'data' will contain an array of the user's uploads
-    // You can now use this data to display the samples on the front end
-    // For example, you can map over the data array and create UI elements for each sample
-
-    // Example:
-    data.forEach((upload) => {
-      const sampleName = upload.sample_name;
-      const audioUrl = upload.audio_URL;
-      // Now you can use 'sampleName' and 'audioUrl' to display the sample information
-      // and create audio players to play the audio files.
-    });
-
-  } catch (error) {
-    console.error('Error fetching user uploads', error);
-    // Handle error if needed
-  }
-}
-
-
-    // Clear the form after successful upload
     setShowForm(false);
     setSampleName("");
+    dispatch({ type: 'FETCH_UPLOADS', payload: userId });
+  };
+
+  const handleShowSamples = () => {
+    setShowSamples((prevShowSamples) => !prevShowSamples);
+    //setShowSamples(true); 
   };
 
   const audioProps = {
     audioType,
     status,
-    //audioSrc,
+    audioSrc,
     timeslice: 1000, // timeslice（https://developer.mozilla.org/en-US/docs/Web/API/MediaRecorder/start#Parameters）
     startCallback: (e) => {
       console.log("succ start", e);
@@ -92,7 +75,7 @@ async function fetchUserUploads(userId) {
       console.log("succ pause", e);
     },
     stopCallback: (e) => {
-      //setAudioSrc(window.URL.createObjectURL(e));
+      setAudioSrc(window.URL.createObjectURL(e));
       setAudioBlob(e);
       setStatus("inactive");
       console.log("succ stop", e);
@@ -145,11 +128,21 @@ async function fetchUserUploads(userId) {
           <button className="btn" onClick={() => setShowForm(true)}>
             Upload
           </button>
-          <button>
-            My Samples
-          </button>
+          <button onClick={handleShowSamples}>My Samples</button>
+
+      
         </div>
       </AudioAnalyser>
+      {showSamples && (
+        <div>
+          {uploads.map((upload) => (
+            <ul key={upload.id}>
+              <li>{upload.sample_name}</li>
+              <li><audio controls src={upload.audio_URL} /></li>
+            </ul>
+          ))}
+        </div>
+      )}
       <p>choose output type</p>
       <select
         name=""

@@ -1,11 +1,12 @@
- const uploadReducer = (state = [], action) => {
+const uploadReducer = (state = [], action) => {
     switch (action.type) {
-      case 'SET_UPLOADS':
-        return action.payload;
-      default:
-        return state;
+        case 'SET_UPLOADS':
+            return action.payload;
+        case 'ADD_UPLOAD':
+            return [...state, action.payload]
+        default:
+            return state;
     }
-  };
-  
-  export default uploadReducer;
-  
+};
+
+export default uploadReducer;
