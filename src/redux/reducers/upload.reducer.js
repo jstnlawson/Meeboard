@@ -4,9 +4,15 @@ const uploadReducer = (state = [], action) => {
             return action.payload;
         case 'ADD_UPLOAD':
             return [...state, action.payload]
+            case 'DELETE_UPLOAD':
+      
+      console.log('Deleting sample with id:', action.payload);
+      return state.filter(upload => upload.id !== action.payload);
         default:
             return state;
     }
 };
+
+
 
 export default uploadReducer;

@@ -2,24 +2,24 @@ import React, { useState } from "react";
 import AudioAnalyser from "react-audio-analyser";
 import { useDispatch, useSelector } from "react-redux";
 import { useEffect } from "react";
-
+import { useHistory } from 'react-router-dom';
 
 const AudioRecorder = () => {
+  const dispatch = useDispatch();
+  const history = useHistory();
+
   const [status, setStatus] = useState("");
   const [audioBlob, setAudioBlob] = useState(null);
   const [audioType, setAudioType] = useState("audio/wav");
-
-  const [showForm, setShowForm] = useState(false); 
-  const [showSamples, setShowSamples] = useState(false); 
-
+  const [showForm, setShowForm] = useState(false);
+  const [showSamples, setShowSamples] = useState(false);
   const [sampleName, setSampleName] = useState("");
-  const dispatch = useDispatch();
+  const [audioSrc, setAudioSrc] = useState(null);
+
   const userId = useSelector((state) => state.user.id);
   const uploads = useSelector((state) => state.uploadReducer);
-  const [isPlaying, setIsPlaying] = useState(false);
-  const [audioSrc, setAudioSrc] = useState(null); // Add audioSrc state
-
-
+  const editReducer = useSelector(store => store.editReducer)
+  //const [isPlaying, setIsPlaying] = useState(false);
 
 
   console.log('uploads in audioRecorder:', uploads)
@@ -43,7 +43,7 @@ const AudioRecorder = () => {
     console.log("userId is:", userId);
     if (!audioBlob) return;
 
-    // If the form is not visible or the sample name is not entered, show the form
+    // If the form isn't visible or sample name not entered, show the form
     if (!sampleName || !showForm) {
       setShowForm(true);
       return;
@@ -62,6 +62,40 @@ const AudioRecorder = () => {
     setShowSamples((prevShowSamples) => !prevShowSamples);
     //setShowSamples(true); 
   };
+
+  const handleDelete = async (sampleId) => {
+    try {
+      await dispatch({ type: 'DELETE_UPLOAD', payload: sampleId });
+      await new Promise(resolve => setTimeout(resolve, 500));
+      await dispatch({ type: 'FETCH_UPLOADS', payload: userId });
+    } catch (error) {
+      console.error('Error deleting sample:', error);
+    }
+  }
+
+  // dispatch({ type: 'DELETE_UPLOAD', payload: sampleId });
+  // dispatch({ type: 'FETCH_UPLOADS', payload: userId });
+  //};
+
+  const handleChange = (event, propertyToChange) => {
+    dispatch({
+        type: 'EDIT_ONCHANGE',
+        payload: {
+            property: propertyToChange, 
+            value: event.target.value 
+        }
+    })
+};
+
+const handleEditSubmit = (event) => {
+  event.preventDefault();
+  dispatch({ type: 'EDIT_SAMPLE', payload: studentToEdit});
+  history.push('/user')
+}
+
+const cancelEdit = () => {
+  history.push('/')
+}
 
   const audioProps = {
     audioType,
@@ -130,7 +164,7 @@ const AudioRecorder = () => {
           </button>
           <button onClick={handleShowSamples}>My Samples</button>
 
-      
+
         </div>
       </AudioAnalyser>
       {showSamples && (
@@ -139,6 +173,7 @@ const AudioRecorder = () => {
             <ul key={upload.id}>
               <li>{upload.sample_name}</li>
               <li><audio controls src={upload.audio_URL} /></li>
+              <button>Edit</button><button onClick={() => handleDelete(upload.id)}>Delete</button>
             </ul>
           ))}
         </div>

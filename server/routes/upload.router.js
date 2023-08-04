@@ -84,6 +84,50 @@ uploadRouter.get('/:id', (req, res) => {
         return res.status(500).json({ error: 'Error fetching user uploads from the database' });
       });
   });
+
+  uploadRouter.delete('/:id', (req, res) => {
+    const sampleId = req.params.id;
+    const deleteQuery = `DELETE FROM samples WHERE id = $1`;
+  
+        pool.query(deleteQuery, [sampleId])
+          .then(() => {
+            // Delete the sample from AWS S3
+            const bucket = 'first-audio-bucket';
+            const key = sampleId;
+  
+            const params = {
+              Bucket: bucket,
+              Key: key,
+            };
+  
+            s3.deleteObject(params, (error, data) => {
+              if (error) {
+                console.error('Error deleting from S3', error);
+                return res.status(500).json({ error: 'Error deleting from S3' });
+              }
+  
+              return res.json({ message: 'Sample deleted successfully' });
+            });
+          })
+          .catch((err) => {
+            console.error('Error deleting from the database', err);
+            return res.status(500).json({ error: 'Error deleting from the database' });
+          });
+  });
+  
+  uploadRouter.put('/:id', (req, res) => {
+    // Update this single student
+    const idToUpdate = req.params.id;
+    const sqlText = `UPDATE samples SET sample_name = $1 WHERE user_id = $2`;
+    pool.query(sqlText, [req.body.sample_name, idToUpdate])
+        .then((result) => {
+            res.sendStatus(200);
+        })
+        .catch((error) => {
+            console.log(`Error making database query ${sqlText}`, error);
+            res.sendStatus(500);
+        });
+});
   
 
 module.exports = uploadRouter;
