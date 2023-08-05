@@ -6,12 +6,17 @@ const pool = require('../modules/pool');
 //create unique name for uploaded file using uuid
 const { v4: uuidv4 } = require('uuid');
 
-
+require('dotenv').config(); // Load environment variables from .env
 
 AWS.config.update({
-  accessKeyId: 'AKIA6K6T4SGUYVILRNZH',
-  secretAccessKey: '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',
+  accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+  secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
 });
+
+// AWS.config.update({
+//   accessKeyId: 'AKIA6K6T4SGUYVILRNZH',
+//   secretAccessKey: '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',
+// });
 
 const s3 = new AWS.S3();
 
@@ -118,7 +123,7 @@ uploadRouter.get('/:id', (req, res) => {
   uploadRouter.put('/:id', (req, res) => {
     // Update this single student
     const idToUpdate = req.params.id;
-    const sqlText = `UPDATE samples SET sample_name = $1 WHERE user_id = $2`;
+    const sqlText = `UPDATE samples SET sample_name = $1 WHERE id = $2`;
     pool.query(sqlText, [req.body.sample_name, idToUpdate])
         .then((result) => {
             res.sendStatus(200);

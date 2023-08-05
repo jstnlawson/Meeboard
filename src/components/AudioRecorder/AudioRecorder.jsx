@@ -18,12 +18,18 @@ const AudioRecorder = () => {
 
   const userId = useSelector((state) => state.user.id);
   const uploads = useSelector((state) => state.uploadReducer);
-  const editReducer = useSelector(store => store.editReducer)
+  //const editReducer = useSelector(store => store.editReducer)
+  const editReducer = useSelector((state) => state.editReducer);
   //const [isPlaying, setIsPlaying] = useState(false);
+  //const userId = useSelector((state) => parseInt(state.user.id, 10));
+  const sampleId = useSelector((state) => state.editReducer.id);
 
 
   console.log('uploads in audioRecorder:', uploads)
-
+  console.log('userId in AudioRecorder:', userId)
+  console.log('editReducer in AudioRecorder:', editReducer)
+  console.log('editReducer.id in AudioRecorder:', editReducer?.id)
+  console.log('sampleId in AudioRecorder:', sampleId)
   const controlAudio = (status) => {
     setStatus(status);
   };
@@ -77,21 +83,59 @@ const AudioRecorder = () => {
   // dispatch({ type: 'FETCH_UPLOADS', payload: userId });
   //};
 
-  const handleChange = (event, propertyToChange) => {
-    dispatch({
-        type: 'EDIT_ONCHANGE',
-        payload: {
-            property: propertyToChange, 
-            value: event.target.value 
-        }
-    })
+//   const handleChange = (event, propertyToChange) => {
+//     dispatch({
+//         type: 'EDIT_ONCHANGE',
+//         payload: {
+//             property: propertyToChange, 
+//             value: event.target.value 
+//         }
+//     })
+// };
+
+const handleInputChange = (event) => {
+  dispatch({
+    type: 'EDIT_ONCHANGE',
+    payload: {
+      id: sampleId,
+      property: 'sample_name',
+      value: event.target.value,
+    },
+  });
 };
 
-const handleEditSubmit = (event) => {
-  event.preventDefault();
-  dispatch({ type: 'EDIT_SAMPLE', payload: studentToEdit});
-  history.push('/user')
-}
+const handleSaveClick = () => {
+  // Dispatch the 'EDIT_SAMPLE' action to trigger the 'editSample' saga
+  dispatch({
+    type: 'EDIT_SAMPLE',
+    payload: {
+      id: sampleId,
+      sample_name: editReducer.sample_name,
+      user_id: userId,
+    },
+  });
+};
+
+// const handleSaveClick = () => {
+//   // Dispatch the 'EDIT_SAMPLE' action to trigger the 'editSample' saga
+//   //const sampleToEdit = { ...editReducer, userId};
+//   //console.log("payload in handleSaveClick:", sampleToEdit);
+//   dispatch({ type: 'EDIT_SAMPLE', payload: editReducer });
+// };
+// const handleEditSubmit = (event) => {
+//   event.preventDefault();
+//   dispatch({ type: 'EDIT_SAMPLE', payload: studentToEdit});
+//   history.push('/user')
+// }
+
+const handleEditClick = (upload) => {
+  // Assuming 'studentToEdit' is an object that contains the data of the sample being edited
+  dispatch({
+    type: 'EDIT_STUDENT',
+    payload: upload,
+  });
+};
+//removed .id from upload
 
 const cancelEdit = () => {
   history.push('/')
@@ -167,13 +211,45 @@ const cancelEdit = () => {
 
         </div>
       </AudioAnalyser>
-      {showSamples && (
+      {/* {showSamples && (
         <div>
           {uploads.map((upload) => (
             <ul key={upload.id}>
               <li>{upload.sample_name}</li>
               <li><audio controls src={upload.audio_URL} /></li>
               <button>Edit</button><button onClick={() => handleDelete(upload.id)}>Delete</button>
+            </ul>
+          ))}
+        </div>
+      )} */}
+      {showSamples && (
+        <div>
+          {uploads.map((upload) => (
+            <ul key={upload.id}>
+              {editReducer.id === upload.id ? (
+                <>
+                  <li>
+                    <input
+                      type="text"
+                      value={editReducer.sample_name}
+                      onChange={(e) => handleInputChange(e, upload.id)}
+                    />
+                  </li>
+                  <li>
+                    <audio controls src={upload.audio_URL} />
+                  </li>
+                  <button onClick={handleSaveClick}>Save</button>
+                </>
+              ) : (
+                <>
+                  <li>{upload.sample_name}</li>
+                  <li>
+                    <audio controls src={upload.audio_URL} />
+                  </li>
+                  <button onClick={() => handleEditClick(upload)}>Edit</button>
+                  <button onClick={() => handleDelete(upload.id)}>Delete</button>
+                </>
+              )}
             </ul>
           ))}
         </div>
