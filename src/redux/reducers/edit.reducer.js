@@ -1,5 +1,5 @@
 const editReducer = (state = {}, action) => {
-    if (action.type === 'EDIT_STUDENT') {
+    if (action.type === 'EDIT_SAMPLE') {
         return action.payload;
     }
     // if (action.type === 'EDIT_ONCHANGE') {

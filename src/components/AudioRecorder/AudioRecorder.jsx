@@ -131,7 +131,7 @@ const handleSaveClick = () => {
 const handleEditClick = (upload) => {
   // Assuming 'studentToEdit' is an object that contains the data of the sample being edited
   dispatch({
-    type: 'EDIT_STUDENT',
+    type: 'EDIT_SAMPLE',
     payload: upload,
   });
 };
