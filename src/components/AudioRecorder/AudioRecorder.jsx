@@ -18,10 +18,7 @@ const AudioRecorder = () => {
 
   const userId = useSelector((state) => state.user.id);
   const uploads = useSelector((state) => state.uploadReducer);
-  //const editReducer = useSelector(store => store.editReducer)
   const editReducer = useSelector((state) => state.editReducer);
-  //const [isPlaying, setIsPlaying] = useState(false);
-  //const userId = useSelector((state) => parseInt(state.user.id, 10));
   const sampleId = useSelector((state) => state.editReducer.id);
 
 
@@ -41,7 +38,6 @@ const AudioRecorder = () => {
   const handleStop = (audioData) => {
     setAudioBlob(audioData.audioBlob);
     setStatus("inactive");
-
     console.log("succ stop", audioData);
   };
 
@@ -49,7 +45,6 @@ const AudioRecorder = () => {
     console.log("userId is:", userId);
     if (!audioBlob) return;
 
-    // If the form isn't visible or sample name not entered, show the form
     if (!sampleName || !showForm) {
       setShowForm(true);
       return;
@@ -65,8 +60,7 @@ const AudioRecorder = () => {
   };
 
   const handleShowSamples = () => {
-    setShowSamples((prevShowSamples) => !prevShowSamples);
-    //setShowSamples(true); 
+    setShowSamples((prevShowSamples) => !prevShowSamples); 
   };
 
   const handleDelete = async (sampleId) => {
@@ -78,20 +72,6 @@ const AudioRecorder = () => {
       console.error('Error deleting sample:', error);
     }
   }
-
-  // dispatch({ type: 'DELETE_UPLOAD', payload: sampleId });
-  // dispatch({ type: 'FETCH_UPLOADS', payload: userId });
-  //};
-
-//   const handleChange = (event, propertyToChange) => {
-//     dispatch({
-//         type: 'EDIT_ONCHANGE',
-//         payload: {
-//             property: propertyToChange, 
-//             value: event.target.value 
-//         }
-//     })
-// };
 
 const handleInputChange = (event) => {
   dispatch({
@@ -105,7 +85,6 @@ const handleInputChange = (event) => {
 };
 
 const handleSaveClick = () => {
-  // Dispatch the 'EDIT_SAMPLE' action to trigger the 'editSample' saga
   dispatch({
     type: 'EDIT_SAMPLE',
     payload: {
@@ -116,26 +95,12 @@ const handleSaveClick = () => {
   });
 };
 
-// const handleSaveClick = () => {
-//   // Dispatch the 'EDIT_SAMPLE' action to trigger the 'editSample' saga
-//   //const sampleToEdit = { ...editReducer, userId};
-//   //console.log("payload in handleSaveClick:", sampleToEdit);
-//   dispatch({ type: 'EDIT_SAMPLE', payload: editReducer });
-// };
-// const handleEditSubmit = (event) => {
-//   event.preventDefault();
-//   dispatch({ type: 'EDIT_SAMPLE', payload: studentToEdit});
-//   history.push('/user')
-// }
-
 const handleEditClick = (upload) => {
-  // Assuming 'studentToEdit' is an object that contains the data of the sample being edited
   dispatch({
     type: 'EDIT_SAMPLE',
     payload: upload,
   });
 };
-//removed .id from upload
 
 const cancelEdit = () => {
   history.push('/')
@@ -185,7 +150,6 @@ const cancelEdit = () => {
           <button onClick={uploadAudio}>Confirm</button>
         </div>
       )}
-      {/* <AudioAnalyser {...audioProps}> */}
       <AudioAnalyser {...audioProps} controlAudio={controlAudio}>
         <div className="btn-box">
           <button
@@ -211,17 +175,6 @@ const cancelEdit = () => {
 
         </div>
       </AudioAnalyser>
-      {/* {showSamples && (
-        <div>
-          {uploads.map((upload) => (
-            <ul key={upload.id}>
-              <li>{upload.sample_name}</li>
-              <li><audio controls src={upload.audio_URL} /></li>
-              <button>Edit</button><button onClick={() => handleDelete(upload.id)}>Delete</button>
-            </ul>
-          ))}
-        </div>
-      )} */}
       {showSamples && (
         <div>
           {uploads.map((upload) => (
