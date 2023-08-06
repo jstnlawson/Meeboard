@@ -16,6 +16,10 @@ const AudioRecorder = () => {
   const [sampleName, setSampleName] = useState("");
   const [audioSrc, setAudioSrc] = useState(null);
   const [isPlaying, setIsPlaying] = useState(false);
+  const [playbackPosition, setPlaybackPosition] = useState(0);
+  const [audioPlayer, setAudioPlayer] = useState(null);
+  const [audioElements, setAudioElements] = useState([]);
+ 
   //const [playButtonPress, setPlayButtonPress] = useState(false);
 
 
@@ -43,6 +47,7 @@ const AudioRecorder = () => {
     setAudioBlob(audioData.audioBlob);
     setStatus("inactive");
     console.log("succ stop", audioData);
+    setAudioSrc(URL.createObjectURL(audioData.audioBlob));
   };
 
   const uploadAudio = async () => {
@@ -139,16 +144,33 @@ const AudioRecorder = () => {
   };
 
   const handlePlay = () => {
-    setIsPlaying(true);
+    const newAudioElement = new Audio(audioSrc);
+    newAudioElement.addEventListener("ended", () => {
+      setAudioElements((prevAudioElements) =>
+        prevAudioElements.filter((el) => el !== newAudioElement)
+      );
+    });
+    setAudioElements((prevAudioElements) => [...prevAudioElements, newAudioElement]);
+    newAudioElement.play();
   };
 
-  // const handlePlayStart = () => {
-  //   setPlayButtonPress(true);
-  // };
-
-  const handlePlayStop = () => {
-    setIsPlaying(false);
+  const handleStopAll = () => {
+    audioElements.forEach((element) => {
+      element.pause();
+      element.currentTime = 0;
+    });
+    setAudioElements([]);
   };
+
+  useEffect(() => {
+    return () => {
+      if (audioPlayer) {
+        audioPlayer.removeEventListener("ended", handleAudioEnded);
+        audioPlayer.pause();
+        audioPlayer.currentTime = 0;
+      }
+    };
+  }, [audioPlayer]);
 
   useEffect(() => {
     const audioPlayer = new Audio(audioSrc);
@@ -160,9 +182,11 @@ const AudioRecorder = () => {
     audioPlayer.addEventListener("ended", handleAudioEnded);
 
     if (isPlaying) {
+      audioPlayer.currentTime = 0; // Start from the beginning
       audioPlayer.play();
     } else {
       audioPlayer.pause();
+      audioPlayer.currentTime = 0; // Reset to the beginning when paused
     }
 
     return () => {
@@ -173,17 +197,24 @@ const AudioRecorder = () => {
   }, [isPlaying, audioSrc]);
 
   useEffect(() => {
-    // Add event listeners for mouseup and touchend on document
-    document.addEventListener("mouseup", handlePlayStop);
-    document.addEventListener("touchend", handlePlayStop);
-
-    // Cleanup by removing event listeners when the component unmounts
-    return () => {
-      document.removeEventListener("mouseup", handlePlayStop);
-      document.removeEventListener("touchend", handlePlayStop);
+    // Event listener to handle "keydown" event on the document
+    const handleKeyDown = (event) => {
+      if (event.key === "t") {
+        // Check if audioSrc is available before triggering play
+        if (audioSrc) {
+          handlePlay();
+        }
+      }
     };
-  }, []);
 
+    // Add the event listener when the component mounts
+    document.addEventListener("keydown", handleKeyDown);
+
+    // Clean up by removing the event listener when the component unmounts
+    return () => {
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [audioSrc]);
 
   useEffect(() => {
     dispatch({ type: 'FETCH_UPLOADS', payload: userId })
@@ -225,15 +256,11 @@ const AudioRecorder = () => {
             Upload
           </button>
           <button onClick={handleShowSamples}>My Samples</button>
-          <button className="btn" onMouseDown={handlePlay}
-            onMouseUp={handlePlayStop}
-            onTouchStart={handlePlay}
-            onTouchEnd={handlePlayStop} onClick={handlePlay}>
+          <button 
+          className="btn" 
+             onClick={handlePlay}>
             Play
           </button>
-
-
-
         </div>
       </AudioAnalyser>
       {showSamples && (
