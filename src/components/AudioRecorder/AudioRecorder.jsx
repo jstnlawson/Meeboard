@@ -7,6 +7,12 @@ import { useHistory } from 'react-router-dom';
 const AudioRecorder = () => {
   const AudioContext = window.AudioContext || window.webkitAudioContext;
   const audioContext = new AudioContext();
+  const distortion = audioContext.createWaveShaper();
+  const [isDistorted, setIsDistorted] = useState(false);
+  const [isDelayActive, setIsDelayActive] = useState(false);
+  const [delayTime, setDelayTime] = useState(0);
+  const [delayNode, setDelayNode] = useState(null);
+
 
   const dispatch = useDispatch();
   const history = useHistory();
@@ -176,19 +182,90 @@ const AudioRecorder = () => {
         source.buffer = buffer;
         source.playbackRate.value = pitchShift;
 
+        handleDelayTimeChange(0.5);
+
+        const distortionGainNode = audioContext.createGain();
+        distortionGainNode.gain.value = isDistorted ? 1 : 1.0;
+
+        if (isDelayActive) {
+          source.connect(newDelayNode);
+          newDelayNode.connect(audioContext.destination);
+        } else {
+          source.connect(audioContext.destination);
+        }
+
+        // Apply distortion effect if isDistorted is true
+        if (isDistorted) {
+          const distortionNode = audioContext.createWaveShaper();
+          distortionNode.curve = makeDistortionCurve(400);
+          distortionNode.oversample = "4x";
+
+          source.connect(distortionNode);
+          distortionNode.connect(audioContext.destination);
+        } else {
+          source.connect(audioContext.destination);
+        }
+
         const currentPlaybackPosition = audioPlayer.currentTime;
 
         source.connect(audioContext.destination);
         source.start(0, currentPlaybackPosition);
       })
       .catch((error) => console.error("Error decoding audio data:", error));
+
+    const newDelayNode = audioContext.createDelay(5.0);
+    newDelayNode.delayTime.setValueAtTime(delayTime, audioContext.currentTime);
+
+    
   };
 
   const handleKeys = (key) => {
     const playbackRate = playbackRates[key];
     handlePitch(playbackRate);
   };
+  //DISTORTION
+  function makeDistortionCurve(amount) {
+    const k = typeof amount === "number" ? amount : 50;
+    const n_samples = 44100;
+    const curve = new Float32Array(n_samples);
+    const deg = Math.PI / 180;
 
+    // Calculate the distortion curve without normalization
+    for (let i = 0; i < n_samples; i++) {
+      const x = (i * 2) / n_samples - 1;
+      curve[i] = ((3 + k) * x * 20 * deg) / (Math.PI + k * Math.abs(x));
+    }
+
+    // Find the maximum value in the curve array
+    const max = Math.max(...curve.map(Math.abs));
+
+    // Normalize the curve to ensure its maximum amplitude is 1
+    for (let i = 0; i < n_samples; i++) {
+      curve[i] /= max;
+    }
+
+    return curve;
+  }
+  distortion.curve = makeDistortionCurve(400);
+  distortion.oversample = "4x";
+
+  //DELAY
+  const toggleDelay = () => {
+    setIsDelayActive((prevIsDelayActive) => !prevIsDelayActive);
+  };
+
+  const handleDelayTimeChange = (time) => {
+    setDelayTime(1.0);
+  };
+
+  //USEEFFECTS
+  useEffect(() => {
+    return () => {
+      if (delayNode) {
+        delayNode.disconnect();
+      }
+    };
+  }, [delayNode]);
 
   useEffect(() => {
     return () => {
@@ -209,18 +286,17 @@ const AudioRecorder = () => {
       setIsPlaying(false);
     };
 
-    // Remove any existing event listener before adding a new one
-  if (audioPlayer) {
-    audioPlayer.removeEventListener("ended", handleAudioEnded);
-    audioPlayer.pause();
-    audioPlayer.currentTime = 0;
-    audioPlayer.src = ""; // Release the audio
-  }
+    // Remove  event listener before adding new one
+    if (audioPlayer) {
+      audioPlayer.removeEventListener("ended", handleAudioEnded);
+      audioPlayer.pause();
+      audioPlayer.currentTime = 0;
+      audioPlayer.src = ""; // Release the audio
+    }
 
-    //audioPlayer.addEventListener("ended", handleAudioEnded);
     newAudioPlayer.addEventListener("ended", handleAudioEnded);
 
-    // Update the audioPlayer state with the new player
+    // Update state with the new player
     setAudioPlayer(newAudioPlayer);
 
     if (isPlaying) {
@@ -240,20 +316,19 @@ const AudioRecorder = () => {
   }, [isPlaying, audioSrc]);
 
   useEffect(() => {
-    // Event listener to handle "keydown" event on the document
+    // Event listener to handle "keydown" 
     const handleKeyDown = (event) => {
       if (event.key === "t") {
-        // Check if audioSrc is available before triggering play
+        // Check if audioSrc is available 
         if (audioSrc) {
           handlePlay();
         }
       }
     };
 
-    // Add the event listener when the component mounts
     document.addEventListener("keydown", handleKeyDown);
 
-    // Clean up by removing the event listener when the component unmounts
+    // Clean up by removing the listener 
     return () => {
       document.removeEventListener("keydown", handleKeyDown);
     };
@@ -313,16 +388,21 @@ const AudioRecorder = () => {
           <button className="btn" onClick={() => setShowForm(true)}>
             Upload
           </button>
-          <button onClick={handleShowSamples}>My Samples</button>
-          <button
+          <button className="btn" onClick={handleShowSamples}>My Samples</button>
+          {/* <button
             className="btn"
             onClick={handlePlay}>
             Play
           </button>
           <button className="btn" onClick={handlePitch}>
             Play Faster
+          </button> */}
+          <button onClick={() => setIsDistorted((prevIsDistorted) => !prevIsDistorted)}>
+            {isDistorted ? "Disable Distortion" : "Enable Distortion"}
           </button>
-
+          <button onClick={toggleDelay}>
+            {isDelayActive ? "Disable Delay" : "Enable Delay"}
+          </button>
         </div>
       </AudioAnalyser>
       {showSamples && (
