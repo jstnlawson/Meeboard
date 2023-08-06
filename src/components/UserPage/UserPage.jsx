@@ -2,6 +2,7 @@ import React, {useState} from 'react';
 import LogOutButton from '../LogOutButton/LogOutButton';
 import {useSelector, useDispatch} from 'react-redux';
 import AllTheParts from '../AllTheParts/AllTheParts';
+import AudioRecorder from '../AudioRecorder/AudioRecorder';
 
 
 function UserPage() {
@@ -19,7 +20,7 @@ function UserPage() {
     <div>
     {/* {loading && <p>Uploading...</p>}
     {error && <p>Error: {error}</p>} */} 
-    <AllTheParts />
+    <AudioRecorder />
   </div>
   </>
   );

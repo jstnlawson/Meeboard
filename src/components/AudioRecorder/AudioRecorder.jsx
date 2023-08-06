@@ -15,6 +15,10 @@ const AudioRecorder = () => {
   const [showSamples, setShowSamples] = useState(false);
   const [sampleName, setSampleName] = useState("");
   const [audioSrc, setAudioSrc] = useState(null);
+  const [isPlaying, setIsPlaying] = useState(false);
+  //const [playButtonPress, setPlayButtonPress] = useState(false);
+
+
 
   const userId = useSelector((state) => state.user.id);
   const uploads = useSelector((state) => state.uploadReducer);
@@ -60,7 +64,7 @@ const AudioRecorder = () => {
   };
 
   const handleShowSamples = () => {
-    setShowSamples((prevShowSamples) => !prevShowSamples); 
+    setShowSamples((prevShowSamples) => !prevShowSamples);
   };
 
   const handleDelete = async (sampleId) => {
@@ -73,44 +77,47 @@ const AudioRecorder = () => {
     }
   }
 
-const handleInputChange = (event) => {
-  dispatch({
-    type: 'EDIT_ONCHANGE',
-    payload: {
-      id: sampleId,
-      property: 'sample_name',
-      value: event.target.value,
-    },
-  });
-};
+  const handleInputChange = (event) => {
+    dispatch({
+      type: 'EDIT_ONCHANGE',
+      payload: {
+        id: sampleId,
+        property: 'sample_name',
+        value: event.target.value,
+      },
+    });
+  };
 
-const handleSaveClick = () => {
-  dispatch({
-    type: 'EDIT_SAMPLE',
-    payload: {
-      id: sampleId,
-      sample_name: editReducer.sample_name,
-      user_id: userId,
-    },
-  });
-};
+  const handleSaveClick = () => {
+    dispatch({
+      type: 'EDIT_SAMPLE',
+      payload: {
+        id: sampleId,
+        sample_name: editReducer.sample_name,
+        user_id: userId,
+      },
+    });
+  };
 
-const handleEditClick = (upload) => {
-  dispatch({
-    type: 'EDIT_SAMPLE',
-    payload: upload,
-  });
-};
+  const handleEditClick = (upload) => {
+    dispatch({
+      type: 'EDIT_SAMPLE',
+      payload: upload,
+    });
+  };
 
-const cancelEdit = () => {
-  history.push('/')
-}
+  const cancelEdit = () => {
+    history.push('/')
+  }
 
   const audioProps = {
     audioType,
     status,
     audioSrc,
     timeslice: 1000, // timeslice（https://developer.mozilla.org/en-US/docs/Web/API/MediaRecorder/start#Parameters）
+    onPlayCallback: (e) => {
+      console.log("playing", e);
+    },
     startCallback: (e) => {
       console.log("succ start", e);
     },
@@ -130,6 +137,53 @@ const cancelEdit = () => {
       console.log("error", err);
     },
   };
+
+  const handlePlay = () => {
+    setIsPlaying(true);
+  };
+
+  // const handlePlayStart = () => {
+  //   setPlayButtonPress(true);
+  // };
+
+  const handlePlayStop = () => {
+    setIsPlaying(false);
+  };
+
+  useEffect(() => {
+    const audioPlayer = new Audio(audioSrc);
+
+    const handleAudioEnded = () => {
+      setIsPlaying(false);
+    };
+
+    audioPlayer.addEventListener("ended", handleAudioEnded);
+
+    if (isPlaying) {
+      audioPlayer.play();
+    } else {
+      audioPlayer.pause();
+    }
+
+    return () => {
+      audioPlayer.removeEventListener("ended", handleAudioEnded);
+      audioPlayer.pause();
+      audioPlayer.currentTime = 0;
+    };
+  }, [isPlaying, audioSrc]);
+
+  useEffect(() => {
+    // Add event listeners for mouseup and touchend on document
+    document.addEventListener("mouseup", handlePlayStop);
+    document.addEventListener("touchend", handlePlayStop);
+
+    // Cleanup by removing event listeners when the component unmounts
+    return () => {
+      document.removeEventListener("mouseup", handlePlayStop);
+      document.removeEventListener("touchend", handlePlayStop);
+    };
+  }, []);
+
 
   useEffect(() => {
     dispatch({ type: 'FETCH_UPLOADS', payload: userId })
@@ -171,6 +225,13 @@ const cancelEdit = () => {
             Upload
           </button>
           <button onClick={handleShowSamples}>My Samples</button>
+          <button className="btn" onMouseDown={handlePlay}
+            onMouseUp={handlePlayStop}
+            onTouchStart={handlePlay}
+            onTouchEnd={handlePlayStop} onClick={handlePlay}>
+            Play
+          </button>
+
 
 
         </div>
