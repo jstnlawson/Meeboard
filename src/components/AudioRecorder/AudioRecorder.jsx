@@ -5,6 +5,9 @@ import { useEffect } from "react";
 import { useHistory } from 'react-router-dom';
 
 const AudioRecorder = () => {
+  const AudioContext = window.AudioContext || window.webkitAudioContext;
+  const audioContext = new AudioContext();
+
   const dispatch = useDispatch();
   const history = useHistory();
 
@@ -19,7 +22,7 @@ const AudioRecorder = () => {
   const [playbackPosition, setPlaybackPosition] = useState(0);
   const [audioPlayer, setAudioPlayer] = useState(null);
   const [audioElements, setAudioElements] = useState([]);
- 
+
   //const [playButtonPress, setPlayButtonPress] = useState(false);
 
 
@@ -162,37 +165,77 @@ const AudioRecorder = () => {
     setAudioElements([]);
   };
 
+  const handlePitch = (pitchShift) => {
+    if (!audioSrc) return;
+
+    fetch(audioSrc)
+      .then((response) => response.arrayBuffer())
+      .then((arrayBuffer) => audioContext.decodeAudioData(arrayBuffer))
+      .then((buffer) => {
+        const source = audioContext.createBufferSource();
+        source.buffer = buffer;
+        source.playbackRate.value = pitchShift;
+
+        const currentPlaybackPosition = audioPlayer.currentTime;
+
+        source.connect(audioContext.destination);
+        source.start(0, currentPlaybackPosition);
+      })
+      .catch((error) => console.error("Error decoding audio data:", error));
+  };
+
+  const handleKeys = (key) => {
+    const playbackRate = playbackRates[key];
+    handlePitch(playbackRate);
+  };
+
+
   useEffect(() => {
     return () => {
       if (audioPlayer) {
-        audioPlayer.removeEventListener("ended", handleAudioEnded);
+        //audioPlayer.removeEventListener("ended", handleAudioEnded);
         audioPlayer.pause();
-        audioPlayer.currentTime = 0;
+        //audioPlayer.currentTime = 0;
+        //release the audio
+        audioPlayer.src = "";
       }
     };
   }, [audioPlayer]);
 
   useEffect(() => {
-    const audioPlayer = new Audio(audioSrc);
+    const newAudioPlayer = new Audio(audioSrc);
 
     const handleAudioEnded = () => {
       setIsPlaying(false);
     };
 
-    audioPlayer.addEventListener("ended", handleAudioEnded);
+    // Remove any existing event listener before adding a new one
+  if (audioPlayer) {
+    audioPlayer.removeEventListener("ended", handleAudioEnded);
+    audioPlayer.pause();
+    audioPlayer.currentTime = 0;
+    audioPlayer.src = ""; // Release the audio
+  }
+
+    //audioPlayer.addEventListener("ended", handleAudioEnded);
+    newAudioPlayer.addEventListener("ended", handleAudioEnded);
+
+    // Update the audioPlayer state with the new player
+    setAudioPlayer(newAudioPlayer);
 
     if (isPlaying) {
-      audioPlayer.currentTime = 0; // Start from the beginning
-      audioPlayer.play();
+      newAudioPlayer.currentTime = 0; // Start from the beginning
+      newAudioPlayer.play();
     } else {
-      audioPlayer.pause();
-      audioPlayer.currentTime = 0; // Reset to the beginning when paused
+      newAudioPlayer.pause();
+      newAudioPlayer.currentTime = 0; // Reset to the beginning when paused
     }
 
     return () => {
-      audioPlayer.removeEventListener("ended", handleAudioEnded);
-      audioPlayer.pause();
-      audioPlayer.currentTime = 0;
+      newAudioPlayer.removeEventListener("ended", handleAudioEnded);
+      newAudioPlayer.pause();
+      newAudioPlayer.currentTime = 0;
+      newAudioPlayer.src = "";
     };
   }, [isPlaying, audioSrc]);
 
@@ -220,6 +263,21 @@ const AudioRecorder = () => {
     dispatch({ type: 'FETCH_UPLOADS', payload: userId })
     setAudioType("audio/wav");
   }, [dispatch, userId]);
+
+  const playbackRates = {
+    key1: -0.2,
+    key2: 0.0,
+    key3: 0.2,
+    key4: 0.4,
+    key5: 0.6,
+    key6: 0.8,
+    key7: 1.0,
+    key8: 1.2,
+    key9: 1.4,
+    key10: 1.6,
+    key11: 1.8,
+    key12: 2.0,
+  }
 
   return (
     <div>
@@ -256,11 +314,15 @@ const AudioRecorder = () => {
             Upload
           </button>
           <button onClick={handleShowSamples}>My Samples</button>
-          <button 
-          className="btn" 
-             onClick={handlePlay}>
+          <button
+            className="btn"
+            onClick={handlePlay}>
             Play
           </button>
+          <button className="btn" onClick={handlePitch}>
+            Play Faster
+          </button>
+
         </div>
       </AudioAnalyser>
       {showSamples && (
@@ -306,6 +368,21 @@ const AudioRecorder = () => {
         <option value="audio/wav">audio/wav</option>
         <option value="audio/mp3">audio/mp3</option>
       </select>
+      <div className="meeboard-container">
+        <button className="key-one" onClick={() => handleKeys("key1")}></button>
+        <button className="key-two" onClick={() => handleKeys("key2")}></button>
+        <button className="key-three" onClick={() => handleKeys("key3")}></button>
+        <button className="key-four" onClick={() => handleKeys("key4")}></button>
+        <button className="key-five" onClick={() => handleKeys("key5")}></button>
+        <button className="key-six" onClick={() => handleKeys("key6")}></button>
+        <button className="key-seven" onClick={() => handleKeys("key7")}></button>
+        <button className="key-eight" onClick={() => handleKeys("key8")}></button>
+        <button className="key-nine" onClick={() => handleKeys("key9")}></button>
+        <button className="key-ten" onClick={() => handleKeys("key10")}></button>
+        <button className="key-eleven" onClick={() => handleKeys("key11")}></button>
+        <button className="key-twelve" onClick={() => handleKeys("key12")}></button>
+        <button className="key-thirteen" onClick={() => handleKeys("key13")}></button>
+      </div>
     </div>
   );
 }
