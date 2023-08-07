@@ -9,8 +9,8 @@ const { v4: uuidv4 } = require('uuid');
 require('dotenv').config(); // Load environment variables from .env
 
 AWS.config.update({
-  accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-  secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+  accessKeyId: process.env.REACT_APP_AWS_ACCESS_KEY_ID,
+  secretAccessKey: process.env.REACT_APP_AWS_SECRET_ACCESS_KEY,
 });
 
 const s3 = new AWS.S3();

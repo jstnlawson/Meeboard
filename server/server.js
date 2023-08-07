@@ -6,7 +6,14 @@ const cors = require('cors'); // Import the 'cors' package
 
 const app = express();
 
+
+
 app.use(cors()); // Enable CORS for all routes
+// app.use((req, res, next) => {
+//   res.header('Access-Control-Allow-Origin', 'http://localhost:3000'); // Replace with your app's domain
+//   res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
+//   next();
+// });
 
 const sessionMiddleware = require('./modules/session-middleware');
 const passport = require('./strategies/user.strategy');

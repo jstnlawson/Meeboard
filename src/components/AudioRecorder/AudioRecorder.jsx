@@ -8,10 +8,21 @@ const AudioRecorder = () => {
   const AudioContext = window.AudioContext || window.webkitAudioContext;
   const audioContext = new AudioContext();
   const distortion = audioContext.createWaveShaper();
+  const newDelayNode = audioContext.createDelay();
+  const feedback = audioContext.createGain();
   const [isDistorted, setIsDistorted] = useState(false);
   const [isDelayActive, setIsDelayActive] = useState(false);
   const [delayTime, setDelayTime] = useState(0);
   const [delayNode, setDelayNode] = useState(null);
+
+  const [isUsingUploaded, setIsUsingUploaded] = useState(false);
+  const [showPlayButton, setShowPlayButton] = useState(false);
+  const [selectedSampleForPlay, setSelectedSampleForPlay] = useState(null);
+
+  const [selectedSample, setSelectedSample] = useState(null);
+
+
+
 
 
   const dispatch = useDispatch();
@@ -79,6 +90,8 @@ const AudioRecorder = () => {
 
   const handleShowSamples = () => {
     setShowSamples((prevShowSamples) => !prevShowSamples);
+
+    setShowPlayButton(true);
   };
 
   const handleDelete = async (sampleId) => {
@@ -156,7 +169,7 @@ const AudioRecorder = () => {
     const newAudioElement = new Audio(audioSrc);
     newAudioElement.addEventListener("ended", () => {
       setAudioElements((prevAudioElements) =>
-        prevAudioElements.filter((el) => el !== newAudioElement)
+        prevAudioElements.filter((element) => element !== newAudioElement)
       );
     });
     setAudioElements((prevAudioElements) => [...prevAudioElements, newAudioElement]);
@@ -193,13 +206,10 @@ const AudioRecorder = () => {
         } else {
           source.connect(audioContext.destination);
         }
-
-        // Apply distortion effect if isDistorted is true
         if (isDistorted) {
           const distortionNode = audioContext.createWaveShaper();
           distortionNode.curve = makeDistortionCurve(400);
           distortionNode.oversample = "4x";
-
           source.connect(distortionNode);
           distortionNode.connect(audioContext.destination);
         } else {
@@ -213,11 +223,14 @@ const AudioRecorder = () => {
       })
       .catch((error) => console.error("Error decoding audio data:", error));
 
-    const newDelayNode = audioContext.createDelay(5.0);
-    newDelayNode.delayTime.setValueAtTime(delayTime, audioContext.currentTime);
+    newDelayNode.delayTime.value = 0.3;
+    feedback.gain.value = 0.5;
+    newDelayNode.connect(feedback);
+    feedback.connect(newDelayNode);
 
-    
   };
+
+
 
   const handleKeys = (key) => {
     const playbackRate = playbackRates[key];
@@ -257,6 +270,62 @@ const AudioRecorder = () => {
   const handleDelayTimeChange = (time) => {
     setDelayTime(1.0);
   };
+
+  //USE SAVED SAMPLE
+  
+
+//trying to make a play button for uploads
+  const handleSampleSelect = (upload) => {
+    //setSelectedSample(upload)
+    setSelectedSampleForPlay(upload);
+  }
+
+  const handlePlaySample = (audioUrl) => {
+    const newAudioElement = new Audio(audioUrl);
+    newAudioElement.play();
+  };
+
+  // Function to switch between recording and selected sample
+  const [selectedAudioSource, setSelectedAudioSource] = useState(null);
+  const switchAudioSource = () => {
+    console.log("source switch clicked!")
+    setIsUsingUploaded((prevState) => !prevState);
+  };
+
+  // ... Rest of the code ...
+
+  // Update audio source based on selectedAudioSource
+
+  useEffect(() => {
+    if (isUsingUploaded) {
+      console.log("useEffect triggered: isUsingUploaded=", isUsingUploaded);
+      console.log('audioBlob:', audioBlob);
+    console.log('selectedSample:', selectedSample);
+      // Logic to set audioSrc to the uploaded audio source
+      if (audioBlob) {
+        console.log("Setting audio source from audioBlob");
+        setAudioSrc(URL.createObjectURL(audioBlob));
+      }
+    } else if (selectedSample) {
+      console.log("Setting audio source from selectedSample");
+      // Logic to set audioSrc to the selected sample audio source
+      setAudioSrc(selectedSample.audio_URL);
+    }
+  }, [isUsingUploaded, audioBlob, selectedSample]);
+
+  // useEffect(() => {
+  //   if (selectedAudioSource !== null) {
+  //     setAudioSrc(URL.createObjectURL(selectedAudioSource));
+  //   } else {
+  //     // Logic to set audioSrc to the URL of the selected sample
+  //     // For example, if you have a selectedSample state, you can use its URL here
+  //     // setAudioSrc(selectedSample.audio_URL);
+
+  //     setAudioSrc(selectedSample)
+
+  //   }
+  // }, [selectedAudioSource]);
+
 
   //USEEFFECTS
   useEffect(() => {
@@ -429,15 +498,21 @@ const AudioRecorder = () => {
                   <li>
                     <audio controls src={upload.audio_URL} />
                   </li>
+                  <button onClick={() => handleSampleSelect(upload)}>Use Sample</button>
                   <button onClick={() => handleEditClick(upload)}>Edit</button>
                   <button onClick={() => handleDelete(upload.id)}>Delete</button>
+                  {selectedSampleForPlay && selectedSampleForPlay.id === upload.id && (
+              <li>
+                <button onClick={() => handlePlaySample(upload.audio_URL)}>Moved audio to button!</button>
+              </li>
+            )}
                 </>
               )}
             </ul>
           ))}
         </div>
       )}
-      <p>choose output type</p>
+      {/* <p>choose output type</p>
       <select
         name=""
         id=""
@@ -447,8 +522,17 @@ const AudioRecorder = () => {
         <option value="audio/webm">audio/webm（default）</option>
         <option value="audio/wav">audio/wav</option>
         <option value="audio/mp3">audio/mp3</option>
-      </select>
+      </select> */}
       <div className="meeboard-container">
+        {selectedSample && (
+          <div>
+            <p>Selected Sample: {selectedSample.sample_name}</p>
+            <audio controls src={selectedSample.audio_URL} />
+          </div>
+        )}
+        <button onClick={switchAudioSource}>
+          {isUsingUploaded ? "Use In-State Recording" : "Use Uploaded File"}
+        </button>
         <button className="key-one" onClick={() => handleKeys("key1")}></button>
         <button className="key-two" onClick={() => handleKeys("key2")}></button>
         <button className="key-three" onClick={() => handleKeys("key3")}></button>
@@ -463,6 +547,7 @@ const AudioRecorder = () => {
         <button className="key-twelve" onClick={() => handleKeys("key12")}></button>
         <button className="key-thirteen" onClick={() => handleKeys("key13")}></button>
       </div>
+      
     </div>
   );
 }
