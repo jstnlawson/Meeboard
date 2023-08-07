@@ -3,6 +3,7 @@ import AudioAnalyser from "react-audio-analyser";
 import { useDispatch, useSelector } from "react-redux";
 import { useEffect } from "react";
 import { useHistory } from 'react-router-dom';
+import './AudioRecorder.css';
 
 const AudioRecorder = () => {
   const AudioContext = window.AudioContext || window.webkitAudioContext;
@@ -20,6 +21,8 @@ const AudioRecorder = () => {
   const [selectedSampleForPlay, setSelectedSampleForPlay] = useState(null);
 
   const [selectedSample, setSelectedSample] = useState(null);
+  const [uploadedAudioURL, setUploadedAudioURL] = useState(null);
+
 
 
 
@@ -83,6 +86,10 @@ const AudioRecorder = () => {
     formData.append("user_id", userId);
     formData.append("audiofile", audioBlob, "audio.wav");
     const response = await fetch("/api/upload", { body: formData, method: "post" });
+
+    const uploadedAudioUrl = await response.text(); // Assuming the response contains the audio URL
+    setUploadedAudioURL(uploadedAudioUrl);
+
     setShowForm(false);
     setSampleName("");
     dispatch({ type: 'FETCH_UPLOADS', payload: userId });
@@ -198,7 +205,7 @@ const AudioRecorder = () => {
         handleDelayTimeChange(0.5);
 
         const distortionGainNode = audioContext.createGain();
-        distortionGainNode.gain.value = isDistorted ? 1 : 1.0;
+        distortionGainNode.gain.value = -1;
 
         if (isDelayActive) {
           source.connect(newDelayNode);
@@ -272,12 +279,14 @@ const AudioRecorder = () => {
   };
 
   //USE SAVED SAMPLE
-  
 
-//trying to make a play button for uploads
+
+  //trying to make a play button for uploads
   const handleSampleSelect = (upload) => {
     //setSelectedSample(upload)
     setSelectedSampleForPlay(upload);
+    //setAudioSrc(upload.audio_URL);
+    setUploadedAudioURL(upload.audio_URL);
   }
 
   const handlePlaySample = (audioUrl) => {
@@ -300,7 +309,7 @@ const AudioRecorder = () => {
     if (isUsingUploaded) {
       console.log("useEffect triggered: isUsingUploaded=", isUsingUploaded);
       console.log('audioBlob:', audioBlob);
-    console.log('selectedSample:', selectedSample);
+      console.log('selectedSample:', selectedSample);
       // Logic to set audioSrc to the uploaded audio source
       if (audioBlob) {
         console.log("Setting audio source from audioBlob");
@@ -466,12 +475,16 @@ const AudioRecorder = () => {
           <button className="btn" onClick={handlePitch}>
             Play Faster
           </button> */}
-          <button onClick={() => setIsDistorted((prevIsDistorted) => !prevIsDistorted)}>
-            {isDistorted ? "Disable Distortion" : "Enable Distortion"}
-          </button>
-          <button onClick={toggleDelay}>
-            {isDelayActive ? "Disable Delay" : "Enable Delay"}
-          </button>
+          <label className="toggle">
+            <input onClick={() => setIsDistorted((prevIsDistorted) => !prevIsDistorted)} className="toggle-checkbox" type="checkbox" />
+            <div className="toggle-switch"></div>
+            <span className="toggle-label">distortion</span>
+          </label>
+          <label className="toggle">
+            <input onClick={toggleDelay} className="toggle-checkbox" type="checkbox" />
+            <div className="toggle-switch"></div>
+            <span className="toggle-label">delay</span>
+          </label>
         </div>
       </AudioAnalyser>
       {showSamples && (
@@ -502,10 +515,10 @@ const AudioRecorder = () => {
                   <button onClick={() => handleEditClick(upload)}>Edit</button>
                   <button onClick={() => handleDelete(upload.id)}>Delete</button>
                   {selectedSampleForPlay && selectedSampleForPlay.id === upload.id && (
-              <li>
-                <button onClick={() => handlePlaySample(upload.audio_URL)}>Moved audio to button!</button>
-              </li>
-            )}
+                    <li>
+                      <button onClick={() => handlePlaySample(upload.audio_URL)}>Moved audio to button!</button>
+                    </li>
+                  )}
                 </>
               )}
             </ul>
@@ -547,7 +560,7 @@ const AudioRecorder = () => {
         <button className="key-twelve" onClick={() => handleKeys("key12")}></button>
         <button className="key-thirteen" onClick={() => handleKeys("key13")}></button>
       </div>
-      
+
     </div>
   );
 }

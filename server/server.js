@@ -5,7 +5,25 @@ const cors = require('cors'); // Import the 'cors' package
 //require('dotenv').config();
 
 const app = express();
+const corsOptions = {
+  origin: 'http://localhost:3000', // Update with your client's URL
+  methods: 'GET,POST, DELETE',
+  allowedHeaders: 'Authorization',
+  credentials: true, // If you're using cookies or authentication headers
+  optionsSuccessStatus: 200, // Some legacy browsers (IE11) choke on 204
+  // Other options...
+};
 
+app.use(cors(corsOptions));
+app.use((req, res, next) => {
+  res.header('Access-Control-Allow-Origin', 'http://localhost:3000');
+  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
+  res.header('Access-Control-Allow-Headers', 'Authorization, Content-Type');
+  res.header('Access-Control-Allow-Credentials', 'true'); // If needed
+
+  // Pass to the next middleware
+  next();
+});
 
 
 app.use(cors()); // Enable CORS for all routes
