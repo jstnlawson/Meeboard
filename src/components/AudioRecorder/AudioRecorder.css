@@ -1,4 +1,6 @@
-
+.control-box{
+    display: block;
+}
 
 .toggle {
     cursor: pointer;
@@ -7,7 +9,7 @@
   
   .toggle-switch {
     display: inline-block;
-    background: #ccc;
+    background: #483025;
     border-radius: 16px;
     width: 58px;
     height: 32px;
@@ -20,7 +22,9 @@
   }
   .toggle-switch:before {
     display: block;
-    background: linear-gradient(to bottom, #fff 0%, #eee 100%);
+    background: -webkit-linear-gradient(top, #DDA6AE, #FFE6E9 25%, #ffefef 38%, #D9A3A9 63%, #FFE6E9 87%, #DDA6AE);
+
+    /* background: linear-gradient(to bottom, #fff 0%, #eee 100%); */
     border-radius: 50%;
     box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.25);
     width: 24px;
@@ -31,7 +35,7 @@
     transition: left 0.25s;
   }
   .toggle:hover .toggle-switch:before {
-    background: linear-gradient(to bottom, #fff 0%, #fff 100%);
+    /* background: linear-gradient(to bottom, #fff 0%, #fff 100%); */
     box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.5);
   }
   .toggle-checkbox:checked + .toggle-switch {
@@ -50,4 +54,33 @@
     margin-left: 5px;
     position: relative;
     top: 2px;
+  }
+
+  .record-button{
+    background: -webkit-linear-gradient(top, #DDA6AE, #FFE6E9 25%, #ffefef 38%, #D9A3A9 63%, #FFE6E9 87%, #DDA6AE);
+    border: solid 2px rgb(246, 192, 201);
+    border-radius: 50px;
+    height: 60px;
+    width: 60px;
+  }
+
+  .stop-button {
+    background: -webkit-linear-gradient(top, #DDA6AE, #FFE6E9 25%, #ffefef 38%, #D9A3A9 63%, #FFE6E9 87%, #DDA6AE);
+    border: solid 2px rgb(246, 192, 201);
+    border-radius: 5px;
+    height: 60px;
+    width: 60px;
+  }
+
+  .upload-button {
+    background: -webkit-linear-gradient(white, white) padding-box,-webkit-linear-gradient( #ebbec3 63%, #FFE6E9 87%, #DDA6AE), border-box;
+    height: 60px;
+    width: 60px;
+    border: solid transparent;
+    margin-left: 15px;
+  border-width: 0 10px 10px 0;
+  display: inline-block;
+  padding: 3px;
+  transform: rotate(-135deg);
+  -webkit-transform: rotate(-135deg);
   }

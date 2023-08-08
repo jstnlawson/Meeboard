@@ -3,38 +3,73 @@
     grid-template: repeat(13, 1fr) / repeat(26, 1fr);
     width: 50vw;
     height: 50vh;
-    background-color: pink;
+    border-color: #D9A3A9;
+    background-color: linear-gradient(top, #DDA6AE, #FFE6E9 25%, #ffffff 38%, #FFE6E9 63%, #f7f7f7 87%, rgba(38, 38, 38, 0.8));
+    background-color: -webkit-linear-gradient(top, #DDA6AE, #FFE6E9 25%, #ffefef 38%, #D9A3A9 63%, #FFE6E9 87%, #DDA6AE);
 }
 
 /* white keys */
-.key-one, .key-three, .key-five, .key-six, 
-.key-eight, .key-ten, .key-twelve, .key-thirteen {
+.key-one,
+.key-three,
+.key-five,
+.key-six,
+.key-eight,
+.key-ten,
+.key-twelve,
+.key-thirteen {
     background-color: beige;
 }
 
 /* black keys */
-.key-two, .key-four, .key-seven, .key-nine, .key-eleven {
+.key-two,
+.key-four,
+.key-seven,
+.key-nine,
+.key-eleven {
     background-color: black;
-    z-index: 1;/* make the black keys overlap*/
-  } 
+    z-index: 1;
+    /* make the black keys overlap*/
+}
 
 
-  .key-one, .key-two, .key-three, .key-four, .key-five, .key-six, .key-seven, 
-  .key-eight, .key-nine, .key-ten, .key-eleven, .key-twelve, .key-thirteen {
+.key-one,
+.key-two,
+.key-three,
+.key-four,
+.key-five,
+.key-six,
+.key-seven,
+.key-eight,
+.key-nine,
+.key-ten,
+.key-eleven,
+.key-twelve,
+.key-thirteen {
     display: grid;
     cursor: pointer;
     border-radius: 5px;
     box-shadow: 0 1px #999;
-  }
+}
 
-  .key-one, .key-two, .key-three, .key-four, .key-five, .key-six, .key-seven, 
-  .key-eight, .key-nine, .key-ten, .key-eleven, .key-twelve, .key-thirteen:active {
+.key-one,
+.key-two,
+.key-three,
+.key-four,
+.key-five,
+.key-six,
+.key-seven,
+.key-eight,
+.key-nine,
+.key-ten,
+.key-eleven,
+.key-twelve,
+.key-thirteen:active {
     box-shadow: 0 1px #999;
     transform: translateY(1px);
-  }
+}
 
 .key-one {
-    grid-area: 4/2/span 9/span 3;   
+    grid-area: 4/2/span 9/span 3;
 }
 
 .key-two {
@@ -98,9 +133,11 @@
     0% {
         transform: scale(1);
     }
+
     50% {
         transform: scale(0.9);
     }
+
     100% {
         transform: scale(1);
     }

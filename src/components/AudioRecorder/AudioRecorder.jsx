@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import axios from "axios";
 import AudioAnalyser from "react-audio-analyser";
 import { useDispatch, useSelector } from "react-redux";
 import { useEffect } from "react";
@@ -58,6 +59,7 @@ const AudioRecorder = () => {
   console.log('editReducer in AudioRecorder:', editReducer)
   console.log('editReducer.id in AudioRecorder:', editReducer?.id)
   console.log('sampleId in AudioRecorder:', sampleId)
+  
   const controlAudio = (status) => {
     setStatus(status);
   };
@@ -190,7 +192,7 @@ const AudioRecorder = () => {
     });
     setAudioElements([]);
   };
-
+//pass front end audio through effects
   const handlePitch = (pitchShift) => {
     if (!audioSrc) return;
 
@@ -236,13 +238,27 @@ const AudioRecorder = () => {
     feedback.connect(newDelayNode);
 
   };
-
-
-
+//pass tuning to keys
   const handleKeys = (key) => {
     const playbackRate = playbackRates[key];
     handlePitch(playbackRate);
   };
+   //tune keys
+   const playbackRates = {
+    key1: -0.2,
+    key2: 0.0,
+    key3: 0.2,
+    key4: 0.4,
+    key5: 0.6,
+    key6: 0.8,
+    key7: 1.0,
+    key8: 1.2,
+    key9: 1.4,
+    key10: 1.6,
+    key11: 1.8,
+    key12: 2.0,
+  }
+
   //DISTORTION
   function makeDistortionCurve(amount) {
     const k = typeof amount === "number" ? amount : 50;
@@ -279,8 +295,6 @@ const AudioRecorder = () => {
   };
 
   //USE SAVED SAMPLE
-
-
   //trying to make a play button for uploads
   const handleSampleSelect = (upload) => {
     //setSelectedSample(upload)
@@ -289,62 +303,96 @@ const AudioRecorder = () => {
     setUploadedAudioURL(upload.audio_URL);
   }
 
-  const handlePlaySample = (audioUrl) => {
-    const newAudioElement = new Audio(audioUrl);
-    newAudioElement.play();
-  };
+  //test function to pass uploaded sample through effects
+  const handlePlaySample = async (id) => {
+    const pitchShift = 1.5; // Adjust this value to control pitch shift
+    console.log("id in handlePlaySample:", id)
+    try {
+      const { data } = await axios.get(`/api/meeboard/${id}`);
+      const audioData = await axios.get(data.audio_URL, {
+        responseType: 'arraybuffer',
+        withCredentials: true,
+      });
 
-  // Function to switch between recording and selected sample
+      const audioBuffer = await audioContext.decodeAudioData(audioData.data);
+
+      // Create a source node
+      const source = audioContext.createBufferSource();
+      source.buffer = audioBuffer;
+
+      // Create a gain node to control playback speed (pitch)
+      const pitchShiftNode = audioContext.createGain();
+      pitchShiftNode.gain.value = pitchShift;
+
+      // Connect the nodes
+      source.connect(pitchShiftNode);
+      pitchShiftNode.connect(audioContext.destination);
+
+      // Start playing the audio with pitch shift
+      source.start(0);
+    } catch (error) {
+      console.log('error fetching audio file', error);
+    }
+  };
+  // const handlePlaySample = async (audioUrl) => {
+  //   const pitchShift = 1.5; // Adjust this value to control pitch shift
+  
+  //   // Fetch the audio file and decode it
+  //   const response = await fetch(audioUrl, { credentials: 'include' });
+  //   const audioData = await response.arrayBuffer();
+  //   const audioBuffer = await audioContext.decodeAudioData(audioData);
+  
+  //   // Create a source node
+  //   const source = audioContext.createBufferSource();
+  //   source.buffer = audioBuffer;
+  
+  //   // Create a gain node to control playback speed (pitch)
+  //   const pitchShiftNode = audioContext.createGain();
+  //   pitchShiftNode.gain.value = pitchShift;
+  
+  //   // Connect the nodes
+  //   source.connect(pitchShiftNode);
+  //   pitchShiftNode.connect(audioContext.destination);
+  
+  //   // Start playing the audio with pitch shift
+  //   source.start(0);
+  // };
+  
+  // Function to switch between recording and selected sample(not being used yet)
   const [selectedAudioSource, setSelectedAudioSource] = useState(null);
   const switchAudioSource = () => {
     console.log("source switch clicked!")
     setIsUsingUploaded((prevState) => !prevState);
   };
 
-  // ... Rest of the code ...
+//USEEFFECTS
 
-  // Update audio source based on selectedAudioSource
-
-  useEffect(() => {
-    if (isUsingUploaded) {
-      console.log("useEffect triggered: isUsingUploaded=", isUsingUploaded);
-      console.log('audioBlob:', audioBlob);
-      console.log('selectedSample:', selectedSample);
-      // Logic to set audioSrc to the uploaded audio source
-      if (audioBlob) {
-        console.log("Setting audio source from audioBlob");
-        setAudioSrc(URL.createObjectURL(audioBlob));
-      }
-    } else if (selectedSample) {
-      console.log("Setting audio source from selectedSample");
-      // Logic to set audioSrc to the selected sample audio source
-      setAudioSrc(selectedSample.audio_URL);
+//handle sample to meeboard(not currently being used)
+useEffect(() => {
+  if (isUsingUploaded) {
+    console.log("useEffect triggered: isUsingUploaded=", isUsingUploaded);
+    console.log('audioBlob:', audioBlob);
+    console.log('selectedSample:', selectedSample);
+    // Logic to set audioSrc to the uploaded audio source
+    if (audioBlob) {
+      console.log("Setting audio source from audioBlob");
+      setAudioSrc(URL.createObjectURL(audioBlob));
     }
-  }, [isUsingUploaded, audioBlob, selectedSample]);
-
-  // useEffect(() => {
-  //   if (selectedAudioSource !== null) {
-  //     setAudioSrc(URL.createObjectURL(selectedAudioSource));
-  //   } else {
-  //     // Logic to set audioSrc to the URL of the selected sample
-  //     // For example, if you have a selectedSample state, you can use its URL here
-  //     // setAudioSrc(selectedSample.audio_URL);
-
-  //     setAudioSrc(selectedSample)
-
-  //   }
-  // }, [selectedAudioSource]);
-
-
-  //USEEFFECTS
-  useEffect(() => {
+  } else if (selectedSample) {
+    console.log("Setting audio source from selectedSample");
+    // Logic to set audioSrc to the selected sample audio source
+    setAudioSrc(selectedSample.audio_URL);
+  }
+}, [isUsingUploaded, audioBlob, selectedSample]);
+//delay effect
+ useEffect(() => {
     return () => {
       if (delayNode) {
         delayNode.disconnect();
       }
     };
   }, [delayNode]);
-
+//handles pause
   useEffect(() => {
     return () => {
       if (audioPlayer) {
@@ -356,7 +404,7 @@ const AudioRecorder = () => {
       }
     };
   }, [audioPlayer]);
-
+//audio player appears on stop
   useEffect(() => {
     const newAudioPlayer = new Audio(audioSrc);
 
@@ -392,7 +440,7 @@ const AudioRecorder = () => {
       newAudioPlayer.src = "";
     };
   }, [isPlaying, audioSrc]);
-
+//keydown
   useEffect(() => {
     // Event listener to handle "keydown" 
     const handleKeyDown = (event) => {
@@ -411,26 +459,11 @@ const AudioRecorder = () => {
       document.removeEventListener("keydown", handleKeyDown);
     };
   }, [audioSrc]);
-
+//fetch on load
   useEffect(() => {
     dispatch({ type: 'FETCH_UPLOADS', payload: userId })
     setAudioType("audio/wav");
   }, [dispatch, userId]);
-
-  const playbackRates = {
-    key1: -0.2,
-    key2: 0.0,
-    key3: 0.2,
-    key4: 0.4,
-    key5: 0.6,
-    key6: 0.8,
-    key7: 1.0,
-    key8: 1.2,
-    key9: 1.4,
-    key10: 1.6,
-    key11: 1.8,
-    key12: 2.0,
-  }
 
   return (
     <div>
@@ -447,25 +480,21 @@ const AudioRecorder = () => {
         </div>
       )}
       <AudioAnalyser {...audioProps} controlAudio={controlAudio}>
-        <div className="btn-box">
+        <div className="control-box">
           <button
-            className="btn"
+            className="record-button"
             onClick={() => controlAudio("recording")}
-          >
-            Start
-          </button>
-          <button className="btn" onClick={() => controlAudio("paused")}>
+          > </button>
+          {/* <button className="btn" onClick={() => controlAudio("paused")}>
             Pause
-          </button>
+          </button> */}
           <button
-            className="btn"
+            className="stop-button"
             onClick={() => controlAudio("inactive")}
           >
-            Stop
           </button>
-          <button className="btn" onClick={() => setShowForm(true)}>
-            Upload
-          </button>
+          <button className="upload-button" onClick={() => setShowForm(true)}>
+          </button><br></br>
           <button className="btn" onClick={handleShowSamples}>My Samples</button>
           {/* <button
             className="btn"
@@ -516,7 +545,7 @@ const AudioRecorder = () => {
                   <button onClick={() => handleDelete(upload.id)}>Delete</button>
                   {selectedSampleForPlay && selectedSampleForPlay.id === upload.id && (
                     <li>
-                      <button onClick={() => handlePlaySample(upload.audio_URL)}>Moved audio to button!</button>
+                      <button onClick={() => handlePlaySample(upload.id)}>pitch change!</button>
                     </li>
                   )}
                 </>
@@ -537,7 +566,7 @@ const AudioRecorder = () => {
         <option value="audio/mp3">audio/mp3</option>
       </select> */}
       <div className="meeboard-container">
-        {selectedSample && (
+        {/* {selectedSample && (
           <div>
             <p>Selected Sample: {selectedSample.sample_name}</p>
             <audio controls src={selectedSample.audio_URL} />
@@ -545,7 +574,7 @@ const AudioRecorder = () => {
         )}
         <button onClick={switchAudioSource}>
           {isUsingUploaded ? "Use In-State Recording" : "Use Uploaded File"}
-        </button>
+        </button> */}
         <button className="key-one" onClick={() => handleKeys("key1")}></button>
         <button className="key-two" onClick={() => handleKeys("key2")}></button>
         <button className="key-three" onClick={() => handleKeys("key3")}></button>

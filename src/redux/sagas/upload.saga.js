@@ -43,47 +43,10 @@ function* deleteUpload(action) {
     try {
       yield call(axios.delete, `/api/upload/${action.payload}`);
       console.log('action.payload in axios delete:', action.payload)
-      
-    //   yield put ({ type: 'FETCH_UPLOADS', payload: action.payload})
-    //   console.log('payload in FETCH after axios delete:',action.payload)
     } catch (error) {
       console.error('Error deleting sample:', error);
     }
   }
-
-//   function* editSample(action) {
-//     try {
-//         console.log("action in editSample:", action);
-//         const userId = parseInt(action.payload.userId, 10);
-//         console.log("userId in editSample:", userId);
-        
-//         yield axios.put(`/api/upload/${action.payload.id}`, action.payload);
-//         yield put({ type: 'FETCH_UPLOADS', payload: action.payload.userId });
-//         console.log("userId in editSaga:", userId)
-//     } catch(err) {
-//         console.log(err);
-//     }
-//   }
-
-// function* editSample(action) {
-//     try {
-//       const { userId, sampleId, ...otherData } = action.payload;
-//       console.log("userId in editSample:", userId);
-      
-  
-//       // Form the URL for the PUT request, including the sampleId
-//       //const url = `/api/upload/${sampleId}`;
-//       const url = `/api/upload/${action.payload.userId}`;
-  
-//       // Make the PUT request to the server
-//       yield axios.put(url, otherData);
-  
-//       // Dispatch any additional actions if needed, e.g., to refresh the data after the update
-//       yield put({ type: 'FETCH_UPLOADS', payload: userId });
-//     } catch (error) {
-//       console.log(error);
-//     }
-//   }
 
 function* editSample(action) {
     try {
