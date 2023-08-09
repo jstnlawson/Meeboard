@@ -2,9 +2,9 @@
     display: grid;
     grid-template: repeat(13, 1fr) / repeat(26, 1fr);
     justify-self: center;
-    width: 60vw;
-    height: 60vh;
-    border-radius: 5px;
+    width: 600px;
+    height: 300px;
+    border-radius: 0 0 5px 5px;
     border: 3px;
     border-color: #936e72;
     background: -webkit-linear-gradient(top, #DDA6AE, #FFE6E9 25%, #ffefef 38%, #D9A3A9 63%, #FFE6E9 87%, #DDA6AE);
@@ -32,7 +32,7 @@
 .key-seven,
 .key-nine,
 .key-eleven {
-    background-color: rgb(66, 49, 40);
+    background-color: #202020;
     z-index: 1;
     /* make the black keys overlap*/
 }
@@ -74,7 +74,7 @@
     transform: translateY(1px);
 }
 
-.record-button,
+/* .record-button,
 .stop-button,
 .play-button,
 .pause-button,
@@ -84,9 +84,9 @@
     background: none;
     border: none; 
     font-size: large;
-}
+} */
 
-.record-button,
+/* .record-button,
 .stop-button {
     grid-area: 2/2/span 1/span 3;
 }
@@ -98,67 +98,87 @@
 
 .upload-button {
     grid-area: 2/8/span 1/span 3;
-}
+} */
 
 .key-one {
-    grid-area: 4/2/span 9/span 3;
+    grid-area: 3/2/span 10/span 3;
 }
 
 .key-two {
-    grid-area: 4/4/span 5/span 2;
+    grid-area: 3/4/span 6/span 2;
 }
 
 .key-three {
-    grid-area: 4/5/span 9/span 3;
+    grid-area: 3/5/span 10/span 3;
 }
 
 .key-four {
-    grid-area: 4/7/span 5/span 2;
+    grid-area: 3/7/span 6/span 2;
 }
 
 .key-five {
-    grid-area: 4/8/span 9/span 3;
+    grid-area: 3/8/span 10/span 3;
 }
 
 .key-six {
-    grid-area: 4/11/span 9/span 3;
+    grid-area: 3/11/span 10/span 3;
 }
 
 .key-seven {
-    grid-area: 4/13/span 5/span 2;
+    grid-area: 3/13/span 6/span 2;
 }
 
 .key-eight {
-    grid-area: 4/14/span 9/span 3;
+    grid-area: 3/14/span 10/span 3;
 }
 
 .key-nine {
-    grid-area: 4/16/span 5/span 2;
+    grid-area: 3/16/span 6/span 2;
 }
 
 .key-ten {
-    grid-area: 4/17/span 9/span 3;
+    grid-area: 3/17/span 10/span 3;
 }
 
 .key-eleven {
-    grid-area: 4/19/span 5/span 2;
+    grid-area: 3/19/span 6/span 2;
 }
 
 .key-twelve {
-    grid-area: 4/20/span 9/span 3;
+    grid-area: 3/20/span 10/span 3;
 }
 
 .key-thirteen {
-    grid-area: 4/23/span 9/span 3;
+    grid-area: 3/23/span 10/span 3;
 }
 
 .meeboard-container button:active {
-    box-shadow: 0 1px #999;
+    box-shadow: 0 1px #d0d0d0;
     transform: translateY(1px);
 }
 
 .pressed {
     animation: click-animation 0.2s linear;
+}
+
+.distortion-toggle{
+    grid-area: 2/18/span 1/span 2;
+}
+.distortion-label {
+    grid-area: 2/16/span 3/span 2;
+    font-size: 10px;
+    margin-top: 10px;
+    margin-left: 5px;
+}
+ .delay-toggle {
+    grid-area: 2/23/span 1/span 2;
+    
+}
+.delay-label {
+    grid-area: 2/22/span 3/span 2;
+    font-size: 10px;
+    margin-top: 10px;
+    
 }
 
 @keyframes click-animation {

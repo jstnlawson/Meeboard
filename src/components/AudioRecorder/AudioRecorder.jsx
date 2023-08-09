@@ -17,17 +17,14 @@ const AudioRecorder = () => {
   const [delayTime, setDelayTime] = useState(0);
   const [delayNode, setDelayNode] = useState(null);
 
+  //const [mediaPlayerVisible, setMediaPlayerVisible] = useState(false);
+
   const [isUsingUploaded, setIsUsingUploaded] = useState(false);
   const [showPlayButton, setShowPlayButton] = useState(false);
   const [selectedSampleForPlay, setSelectedSampleForPlay] = useState(null);
 
   const [selectedSample, setSelectedSample] = useState(null);
   const [uploadedAudioURL, setUploadedAudioURL] = useState(null);
-
-
-
-
-
 
   const dispatch = useDispatch();
   const history = useHistory();
@@ -40,7 +37,7 @@ const AudioRecorder = () => {
   const [sampleName, setSampleName] = useState("");
   const [audioSrc, setAudioSrc] = useState(null);
   const [isPlaying, setIsPlaying] = useState(false);
-  const [playbackPosition, setPlaybackPosition] = useState(0);
+  //const [playbackPosition, setPlaybackPosition] = useState(0);
   const [audioPlayer, setAudioPlayer] = useState(null);
   const [audioElements, setAudioElements] = useState([]);
 
@@ -54,12 +51,12 @@ const AudioRecorder = () => {
   const sampleId = useSelector((state) => state.editReducer.id);
 
 
-  console.log('uploads in audioRecorder:', uploads)
-  console.log('userId in AudioRecorder:', userId)
-  console.log('editReducer in AudioRecorder:', editReducer)
-  console.log('editReducer.id in AudioRecorder:', editReducer?.id)
-  console.log('sampleId in AudioRecorder:', sampleId)
-  
+  // console.log('uploads in audioRecorder:', uploads)
+  // console.log('userId in AudioRecorder:', userId)
+  // console.log('editReducer in AudioRecorder:', editReducer)
+  // console.log('editReducer.id in AudioRecorder:', editReducer?.id)
+  // console.log('sampleId in AudioRecorder:', sampleId)
+
   const controlAudio = (status) => {
     setStatus(status);
   };
@@ -164,6 +161,7 @@ const AudioRecorder = () => {
       setAudioSrc(window.URL.createObjectURL(e));
       setAudioBlob(e);
       setStatus("inactive");
+      //setMediaPlayerVisible(false); // Hide media player
       console.log("succ stop", e);
     },
     onRecordCallback: (e) => {
@@ -192,7 +190,7 @@ const AudioRecorder = () => {
     });
     setAudioElements([]);
   };
-//pass front end audio through effects
+  //pass front end audio through effects
   const handlePitch = (pitchShift) => {
     if (!audioSrc) return;
 
@@ -238,13 +236,13 @@ const AudioRecorder = () => {
     feedback.connect(newDelayNode);
 
   };
-//pass tuning to keys
+  //pass tuning to keys
   const handleKeys = (key) => {
     const playbackRate = playbackRates[key];
     handlePitch(playbackRate);
   };
-   //tune keys
-   const playbackRates = {
+  //tune keys
+  const playbackRates = {
     key1: -0.2,
     key2: 0.0,
     key3: 0.2,
@@ -334,30 +332,7 @@ const AudioRecorder = () => {
       console.log('error fetching audio file', error);
     }
   };
-  // const handlePlaySample = async (audioUrl) => {
-  //   const pitchShift = 1.5; // Adjust this value to control pitch shift
-  
-  //   // Fetch the audio file and decode it
-  //   const response = await fetch(audioUrl, { credentials: 'include' });
-  //   const audioData = await response.arrayBuffer();
-  //   const audioBuffer = await audioContext.decodeAudioData(audioData);
-  
-  //   // Create a source node
-  //   const source = audioContext.createBufferSource();
-  //   source.buffer = audioBuffer;
-  
-  //   // Create a gain node to control playback speed (pitch)
-  //   const pitchShiftNode = audioContext.createGain();
-  //   pitchShiftNode.gain.value = pitchShift;
-  
-  //   // Connect the nodes
-  //   source.connect(pitchShiftNode);
-  //   pitchShiftNode.connect(audioContext.destination);
-  
-  //   // Start playing the audio with pitch shift
-  //   source.start(0);
-  // };
-  
+
   // Function to switch between recording and selected sample(not being used yet)
   const [selectedAudioSource, setSelectedAudioSource] = useState(null);
   const switchAudioSource = () => {
@@ -365,34 +340,34 @@ const AudioRecorder = () => {
     setIsUsingUploaded((prevState) => !prevState);
   };
 
-//USEEFFECTS
+  //USEEFFECTS
 
-//handle sample to meeboard(not currently being used)
-useEffect(() => {
-  if (isUsingUploaded) {
-    console.log("useEffect triggered: isUsingUploaded=", isUsingUploaded);
-    console.log('audioBlob:', audioBlob);
-    console.log('selectedSample:', selectedSample);
-    // Logic to set audioSrc to the uploaded audio source
-    if (audioBlob) {
-      console.log("Setting audio source from audioBlob");
-      setAudioSrc(URL.createObjectURL(audioBlob));
+  //handle sample to meeboard(not currently being used)
+  useEffect(() => {
+    if (isUsingUploaded) {
+      console.log("useEffect triggered: isUsingUploaded=", isUsingUploaded);
+      console.log('audioBlob:', audioBlob);
+      console.log('selectedSample:', selectedSample);
+      // Logic to set audioSrc to the uploaded audio source
+      if (audioBlob) {
+        console.log("Setting audio source from audioBlob");
+        setAudioSrc(URL.createObjectURL(audioBlob));
+      }
+    } else if (selectedSample) {
+      console.log("Setting audio source from selectedSample");
+      // Logic to set audioSrc to the selected sample audio source
+      setAudioSrc(selectedSample.audio_URL);
     }
-  } else if (selectedSample) {
-    console.log("Setting audio source from selectedSample");
-    // Logic to set audioSrc to the selected sample audio source
-    setAudioSrc(selectedSample.audio_URL);
-  }
-}, [isUsingUploaded, audioBlob, selectedSample]);
-//delay effect
- useEffect(() => {
+  }, [isUsingUploaded, audioBlob, selectedSample]);
+  //delay effect
+  useEffect(() => {
     return () => {
       if (delayNode) {
         delayNode.disconnect();
       }
     };
   }, [delayNode]);
-//handles pause
+  //handles pause
   useEffect(() => {
     return () => {
       if (audioPlayer) {
@@ -404,7 +379,7 @@ useEffect(() => {
       }
     };
   }, [audioPlayer]);
-//audio player appears on stop
+  //audio player appears on stop
   useEffect(() => {
     const newAudioPlayer = new Audio(audioSrc);
 
@@ -440,7 +415,7 @@ useEffect(() => {
       newAudioPlayer.src = "";
     };
   }, [isPlaying, audioSrc]);
-//keydown
+  //keydown
   useEffect(() => {
     // Event listener to handle "keydown" 
     const handleKeyDown = (event) => {
@@ -459,7 +434,7 @@ useEffect(() => {
       document.removeEventListener("keydown", handleKeyDown);
     };
   }, [audioSrc]);
-//fetch on load
+  //fetch on load
   useEffect(() => {
     dispatch({ type: 'FETCH_UPLOADS', payload: userId })
     setAudioType("audio/wav");
@@ -479,43 +454,56 @@ useEffect(() => {
           <button onClick={uploadAudio}>Confirm</button>
         </div>
       )}
-      <AudioAnalyser {...audioProps} controlAudio={controlAudio}>
-        <div className="control-box">
-          <button
-            className="record-button"
-            onClick={() => controlAudio("recording")}
-          > </button>
-          {/* <button className="btn" onClick={() => controlAudio("paused")}>
-            Pause
-          </button> */}
-          <button
-            className="stop-button"
-            onClick={() => controlAudio("inactive")}
-          >
-          </button>
-          <button className="upload-button" onClick={() => setShowForm(true)}>
-          </button><br></br>
-          <button className="btn" onClick={handleShowSamples}>My Samples</button>
-          {/* <button
-            className="btn"
-            onClick={handlePlay}>
-            Play
-          </button>
-          <button className="btn" onClick={handlePitch}>
-            Play Faster
-          </button> */}
-          <label className="toggle">
-            <input onClick={() => setIsDistorted((prevIsDistorted) => !prevIsDistorted)} className="toggle-checkbox" type="checkbox" />
-            <div className="toggle-switch"></div>
-            <span className="toggle-label">distortion</span>
-          </label>
-          <label className="toggle">
-            <input onClick={toggleDelay} className="toggle-checkbox" type="checkbox" />
-            <div className="toggle-switch"></div>
-            <span className="toggle-label">delay</span>
-          </label>
-        </div>
+      <AudioAnalyser {...audioProps} controlAudio={controlAudio} className="audio-recorder">
       </AudioAnalyser>
+      
+
+      <div className="control-box">
+        <button className="record-button"onClick={() => controlAudio("recording")}></button>
+        <span className="record-label">record</span>
+        <button className="stop-button" onClick={() => controlAudio("inactive")}></button>
+        <span className="stop-label">stop</span>
+        <button className="play-button" onClick={handlePlay}></button>
+        <span className="play-label">play</span>
+        <button className="pause-button" onClick={() => controlAudio("paused")}></button>
+        <span className="pause-label">pause</span>
+        <button className="upload-button" onClick={() => setShowForm(true)}></button>
+        <span className="upload-label">upload</span>
+      </div>
+      <div className="meeboard-container">
+        {/* {selectedSample && (
+          <div>
+            <p>Selected Sample: {selectedSample.sample_name}</p>
+            <audio controls src={selectedSample.audio_URL} />
+          </div>
+        )}
+        <button onClick={switchAudioSource}>
+          {isUsingUploaded ? "Use In-State Recording" : "Use Uploaded File"}
+        </button> */}
+        <label className="delay-toggle">
+          <input onClick={toggleDelay} className="toggle-checkbox" type="checkbox" />
+          <div className="toggle-switch"></div>
+        </label>
+        <span className="delay-label">delay</span>
+        <label className="distortion-toggle">
+          <input onClick={() => setIsDistorted((prevIsDistorted) => !prevIsDistorted)} className="toggle-checkbox" type="checkbox" />
+          <div className="toggle-switch"></div>
+        </label><span className="distortion-label">distortion</span>
+        <button className="key-one" onClick={() => handleKeys("key1")}></button>
+        <button className="key-two" onClick={() => handleKeys("key2")}></button>
+        <button className="key-three" onClick={() => handleKeys("key3")}></button>
+        <button className="key-four" onClick={() => handleKeys("key4")}></button>
+        <button className="key-five" onClick={() => handleKeys("key5")}></button>
+        <button className="key-six" onClick={() => handleKeys("key6")}></button>
+        <button className="key-seven" onClick={() => handleKeys("key7")}></button>
+        <button className="key-eight" onClick={() => handleKeys("key8")}></button>
+        <button className="key-nine" onClick={() => handleKeys("key9")}></button>
+        <button className="key-ten" onClick={() => handleKeys("key10")}></button>
+        <button className="key-eleven" onClick={() => handleKeys("key11")}></button>
+        <button className="key-twelve" onClick={() => handleKeys("key12")}></button>
+        <button className="key-thirteen" onClick={() => handleKeys("key13")}></button>
+      </div>
+      <button className="sample-folder-button" onClick={handleShowSamples}>🎵</button>
       {showSamples && (
         <div>
           {uploads.map((upload) => (
@@ -524,19 +512,20 @@ useEffect(() => {
                 <>
                   <li>
                     <input
+                    
                       type="text"
                       value={editReducer.sample_name}
                       onChange={(e) => handleInputChange(e, upload.id)}
                     />
                   </li>
                   <li>
-                    <audio controls src={upload.audio_URL} />
+                    <audio controls src={upload.audio_URL} className="visible-audio" />
                   </li>
                   <button onClick={handleSaveClick}>Save</button>
                 </>
               ) : (
                 <>
-                  <li>{upload.sample_name}</li>
+                  <li className="sample-name">{upload.sample_name}</li>
                   <li>
                     <audio controls src={upload.audio_URL} />
                   </li>
@@ -554,42 +543,7 @@ useEffect(() => {
           ))}
         </div>
       )}
-      {/* <p>choose output type</p>
-      <select
-        name=""
-        id=""
-        onChange={changeScheme}
-        value={audioType}
-      >
-        <option value="audio/webm">audio/webm（default）</option>
-        <option value="audio/wav">audio/wav</option>
-        <option value="audio/mp3">audio/mp3</option>
-      </select> */}
-      <div className="meeboard-container">
-        {/* {selectedSample && (
-          <div>
-            <p>Selected Sample: {selectedSample.sample_name}</p>
-            <audio controls src={selectedSample.audio_URL} />
-          </div>
-        )}
-        <button onClick={switchAudioSource}>
-          {isUsingUploaded ? "Use In-State Recording" : "Use Uploaded File"}
-        </button> */}
-        <button className="key-one" onClick={() => handleKeys("key1")}></button>
-        <button className="key-two" onClick={() => handleKeys("key2")}></button>
-        <button className="key-three" onClick={() => handleKeys("key3")}></button>
-        <button className="key-four" onClick={() => handleKeys("key4")}></button>
-        <button className="key-five" onClick={() => handleKeys("key5")}></button>
-        <button className="key-six" onClick={() => handleKeys("key6")}></button>
-        <button className="key-seven" onClick={() => handleKeys("key7")}></button>
-        <button className="key-eight" onClick={() => handleKeys("key8")}></button>
-        <button className="key-nine" onClick={() => handleKeys("key9")}></button>
-        <button className="key-ten" onClick={() => handleKeys("key10")}></button>
-        <button className="key-eleven" onClick={() => handleKeys("key11")}></button>
-        <button className="key-twelve" onClick={() => handleKeys("key12")}></button>
-        <button className="key-thirteen" onClick={() => handleKeys("key13")}></button>
-      </div>
-
+      
     </div>
   );
 }
