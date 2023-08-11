@@ -1,8 +1,27 @@
-div {
+
+
+
+
+
+.user-container {
     display: grid;
     justify-content: center;
-    background-color: black;
+    justify-self: center;
+    background-color: #202020;
+    color: #FFE6E9;
+      
 }
+div {
+    display: grid;
+}
+
+button {
+    animation: click-animation 0.3s ;
+  }
+
+.blurred {
+    filter: blur(10px);
+  }
 
 .control-box {
     display: grid;
@@ -26,11 +45,24 @@ div {
     grid-area: 2/2/span 3/span 1;
     margin-bottom: 16px;
     background-color: #202020;
-    /* background: -webkit-linear-gradient(top, #DDA6AE, #FFE6E9 25%, #ffefef 38%, #D9A3A9 63%, #FFE6E9 87%, #DDA6AE); */
-    border: solid 2px black;
-    border-radius: 50px;
+    /* border: solid 2px black; */
+    border-radius: 50%;
     height: 50px;
     width: 50px;
+    margin-top: 3px;
+} 
+
+.record-button.active {
+    grid-area: 2/2/span 3/span 1;
+    margin-bottom: 16px;
+    border-radius: 50%;
+    height: 50px;
+    width: 50px; 
+    background-color: rgb(255, 0, 90);
+    box-shadow: 
+    0 0 5px 2px rgb(255, 0, 90),
+    0 0 8px 4px rgb(156, 0, 57),
+    0 0 9px 7px rgb(81, 0, 30);
 }
 
 .record-label {
@@ -38,6 +70,7 @@ div {
     margin-top: 15px;
     margin-left: 11px;
     font-size: 10px;
+    color: #202020;
 }
 
 .stop-button {
@@ -49,6 +82,7 @@ div {
     border-radius: 5px;
     height: 50px;
     width: 50px;
+    margin-top: 3px;
 }
 
 .stop-label {
@@ -56,11 +90,12 @@ div {
     margin-top: 15px;
     margin-left: 16px;
     font-size: 10px;
+    color: #202020;
 }
 
 .play-button {
     padding: 0;
-    margin-top: 20px;
+    margin-top: 3px;
     grid-area: 2/6/span 3/span 1;
     box-sizing: border-box;
     width: 50px;
@@ -76,18 +111,19 @@ div {
     margin-top: 15px;
     margin-left: 16px;
     font-size: 10px;
+    color: #202020;
 }
 
 .pause-button {
     grid-area: 2/8/span 3/span 1;
     padding: 0;
-    margin-top: 20px;
+    margin-top: 3px;
     width: 45px;
-  height: 50px;
-  border-style: solid;
-  border-width: 0px 17px 0px 17px;
-  border-color: #202020;
-  background-color: #DDA6AE;
+    height: 50px;
+    border-style: solid;
+    border-width: 0px 17px 0px 17px;
+    border-color: #202020;
+    background-color: #DDA6AE;
 
 }
 
@@ -96,11 +132,12 @@ div {
     margin-top: 15px;
     margin-left: 10px;
     font-size: 10px;
+    color: #202020;
 }
 
 .upload-button {
     padding: 0;
-    margin-top: 20px;
+    margin-top: 3px;
     grid-area: 2/10/span 3/span 1;
     box-sizing: border-box;
     width: 50px;
@@ -116,6 +153,17 @@ div {
     margin-top: 15px;
     margin-left: 10px;
     font-size: 10px;
+    color: #202020;
+}
+
+.placeholder-input {
+    grid-area: 5/9/span 1/span 3;
+    width: 110px;
+    margin-left: 20px;
+    margin-top: 5px;
+    border-radius: 16px;
+    border: 2px solid #d89da6;
+    background-color: #DDA6AE;
 }
 
 .distortion-toggle,
@@ -202,17 +250,218 @@ div {
     position: absolute;
     top: -12px;
     left: 0px;
+    
 }
 
 .sample-name {
-    color: #ffefef;
+    color: #202020;
 }
 
 audio {
     display: none;
   }
 
-  /* .visible-audio {
+/* .visible-audio {
     display: block !important;
   } */
-  
+
+.samples-modal {
+    display: grid;
+    /* background-color: #FFE6E9; */
+    background: -webkit-linear-gradient(top, #DDA6AE, #FFE6E9 25%, #ffefef 38%, #D9A3A9 63%, #FFE6E9 87%, #DDA6AE);
+
+    justify-self: center;
+    justify-content: center;
+    /* float: right;
+    position: fixed; */
+    /* margin-right: 10px; */
+    color: #202020;
+
+    border-radius: 5px;
+    /* position: fixed; */
+    /* top: 50%;
+    left: 50%; 
+     transform: translate(-50%, -50%); */
+    
+    z-index: 1;
+    height: 500px;
+    width: 25vw;
+    overflow-y: scroll;
+}
+
+li {
+    list-style: none;
+}
+
+.crud-buttons {
+    background: none;
+    border: none;
+}
+
+.audio-element {
+    display: none;
+}
+
+/* MEEBOARD */
+
+.meeboard-container {
+    display: grid;
+    grid-template: repeat(14, 1fr) / repeat(26, 1fr);
+    justify-self: center;
+    width: 600px;
+    height: 300px;
+    border-radius: 0 0 5px 5px;
+    border: 3px;
+    border-color: #936e72;
+    background: -webkit-linear-gradient(top, #DDA6AE, #FFE6E9 25%, #ffefef 38%, #D9A3A9 63%, #FFE6E9 87%, #DDA6AE);
+}
+
+
+
+/* white keys */
+.key-one,
+.key-three,
+.key-five,
+.key-six,
+.key-eight,
+.key-ten,
+.key-twelve,
+.key-thirteen {
+    background-color: #efefe8;
+}
+
+/* black keys */
+.key-two,
+.key-four,
+.key-seven,
+.key-nine,
+.key-eleven {
+    background-color: #202020;
+    z-index: 1;
+    /* make the black keys overlap*/
+}
+
+
+.key-one,
+.key-two,
+.key-three,
+.key-four,
+.key-five,
+.key-six,
+.key-seven,
+.key-eight,
+.key-nine,
+.key-ten,
+.key-eleven,
+.key-twelve,
+.key-thirteen {
+    display: grid;
+    cursor: pointer;
+    border-radius: 5px;
+    box-shadow: 0 3px #484848;
+}
+
+.key-one:active,
+.key-two:active,
+.key-three:active,
+.key-four:active,
+.key-five:active,
+.key-six:active,
+.key-seven:active,
+.key-eight:active,
+.key-nine:active,
+.key-ten:active,
+.key-eleven:active,
+.key-twelve:active,
+.key-thirteen:active {
+    box-shadow: 0 1px #4e4d4d;
+    transform: translateY(1px);
+}
+
+.key-one {
+    grid-area: 4/2/span 10/span 3;
+}
+
+.key-two {
+    grid-area: 4/4/span 6/span 2;
+}
+
+.key-three {
+    grid-area: 4/5/span 10/span 3;
+}
+
+.key-four {
+    grid-area: 4/7/span 6/span 2;
+}
+
+.key-five {
+    grid-area: 4/8/span 10/span 3;
+}
+
+.key-six {
+    grid-area: 4/11/span 10/span 3;
+}
+
+.key-seven {
+    grid-area: 4/13/span 6/span 2;
+}
+
+.key-eight {
+    grid-area: 4/14/span 10/span 3;
+}
+
+.key-nine {
+    grid-area: 4/16/span 6/span 2;
+}
+
+.key-ten {
+    grid-area: 4/17/span 10/span 3;
+}
+
+.key-eleven {
+    grid-area: 4/19/span 6/span 2;
+}
+
+.key-twelve {
+    grid-area: 4/20/span 10/span 3;
+}
+
+.key-thirteen {
+    grid-area: 4/23/span 10/span 3;
+}
+
+/* .meeboard-container button:active {
+    box-shadow: 0 1px #d0d0d0;
+    transform: translateY(1px);
+} */
+
+/* .pressed {
+    animation: click-animation 0.2s linear;
+} */
+
+.logo {
+    grid-area: 1/3/span 2/span 9;
+    margin-bottom: 50px;
+}
+
+.distortion-toggle{
+    grid-area: 2/18/span 1/span 2;
+}
+.distortion-label {
+    grid-area: 2/16/span 3/span 2;
+    font-size: 10px;
+    margin-top: 10px;
+    margin-left: 5px;
+    color: #202020;
+}
+ .delay-toggle {
+    grid-area: 2/23/span 1/span 2;
+    
+}
+.delay-label {
+    grid-area: 2/22/span 3/span 2;
+    font-size: 10px;
+    margin-top: 10px;
+    color: #202020;
+}
+

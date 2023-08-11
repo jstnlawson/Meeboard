@@ -1,7 +1,7 @@
 import React, {useState} from 'react';
-import LogOutButton from '../LogOutButton/LogOutButton';
+
 import {useSelector, useDispatch} from 'react-redux';
-import AllTheParts from '../AllTheParts/AllTheParts';
+
 import AudioRecorder from '../AudioRecorder/AudioRecorder';
 
 
@@ -12,11 +12,6 @@ function UserPage() {
   //const error = useSelector((state) => state.audio.error);
 
   return (<>
-    <div className="container">
-      <h2>Welcome, {user.username}!</h2>
-      <p>Your ID is: {user.id}</p>
-      <LogOutButton className="btn" />
-    </div>
     <div>
     {/* {loading && <p>Uploading...</p>}
     {error && <p>Error: {error}</p>} */} 
