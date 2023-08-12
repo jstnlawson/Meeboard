@@ -134,7 +134,7 @@ const AudioRecorder = () => {
     console.log('upload in handleSampleSelect:', upload)
     //setAudioSrc(upload.audio_URL);
     setAudioSrc(uploadSample);
-   // showDiv()
+    // showDiv()
     setShowSamples((prevShowSamples) => !prevShowSamples);
   }
 
@@ -168,6 +168,10 @@ const AudioRecorder = () => {
         user_id: userId,
       },
     });
+    
+    dispatch({ type: 'FETCH_UPLOADS', payload: userId });
+handleShowSamples(true)
+  //setShowSamples(false);
   };
 
   const handleEditClick = (upload) => {
@@ -175,6 +179,7 @@ const AudioRecorder = () => {
       type: 'EDIT_SAMPLE',
       payload: upload,
     });
+    
   };
 
   const cancelEdit = () => {
@@ -206,7 +211,7 @@ const AudioRecorder = () => {
     onRecordCallback: (e) => {
       //handleLightOn()
       console.log("recording", e);
-      
+
     },
     errorCallback: (err) => {
       console.log("error", err);
@@ -223,6 +228,13 @@ const AudioRecorder = () => {
     setAudioElements((prevAudioElements) => [...prevAudioElements, newAudioElement]);
     newAudioElement.play();
   };
+
+  const handleSamplePlay = (event, audioURL) => {
+    event.preventDefault()
+    const audioElement = new Audio(audioURL);
+    audioElement.play();
+  };
+  
 
   const handleStopAll = () => {
     audioElements.forEach((element) => {
@@ -334,7 +346,7 @@ const AudioRecorder = () => {
     setDelayTime(1.0);
   };
 
-  
+
 
   //USEEFFECTS
 
@@ -421,26 +433,13 @@ const AudioRecorder = () => {
 
   return (
     <>
-      <div className="user-container" style={{display: display}}>
-        {showForm && (
-          <div className="form-container">
-            <input
-              type="text"
-              value={sampleName}
-              onChange={(e) => setSampleName(e.target.value)}
-              placeholder="Enter sample name"
-            />
-            <button onClick={() => setShowForm(false)}>❌</button>
-            <button onClick={uploadAudio}>☑️</button>
-          </div>
-        )}
+      <div className="user-container" style={{ display: display }}>
+
         <AudioAnalyser {...audioProps} controlAudio={controlAudio} className="audio-recorder">
         </AudioAnalyser>
 
-
         <div className="control-box">
-          {/* <button className={`record-button ${isClicked ? 'active' : ''}`} onClick={() => controlAudio("recording")}></button> */}
-          <button className={`record-button ${isClicked ? 'active' : ''}`}  onClick={handleLightOn}></button>
+          <button className={`record-button ${isClicked ? 'active' : ''}`} onClick={handleLightOn}></button>
 
           <span className="record-label">record</span>
           <button className="stop-button" onClick={() => controlAudio("inactive")}></button>
@@ -451,7 +450,20 @@ const AudioRecorder = () => {
           <span className="pause-label">pause</span>
           <button className="upload-button" onClick={() => setShowForm(true)}></button>
           <span className="upload-label">upload</span>
-          <input className="placeholder-input" />
+
+          <div className="form-container">
+            {showForm && (<>      <input
+              type="text"
+              value={sampleName}
+              onChange={(e) => setSampleName(e.target.value)}
+              placeholder="sample name"
+
+            />
+              <button className="form-upload-button" onClick={uploadAudio}><img src="../images/check-icon.png" className="check-icon"/></button>
+              <button className="form-cancel-button" onClick={() => setShowForm(false)}><img src="../images/x-icon.png" className="x-icon"/></button></>
+            )}
+          </div>
+
         </div>
         <div className="meeboard-container">
           <img src="../images/meeboard-logo.png" className="logo" />
@@ -478,45 +490,52 @@ const AudioRecorder = () => {
           <button className="key-twelve" onClick={() => handleKeys("key12")}></button>
           <button className="key-thirteen" onClick={() => handleKeys("key13")}></button>
         </div>
-        
+
         <button className="sample-folder-button" onClick={handleShowSamples}>🎵</button></div>
-        {showSamples && (
-          <div className="samples-modal">
-            {uploads.map((upload) => (
-              <ul key={upload.id}>
-                {editReducer.id === upload.id ? (
-                  <>
-                    <li>
-                      <input
+      {showSamples && (
+        <div className="samples-modal">
+          {uploads.map((upload) => (
+            <ul key={upload.id}>
+              {editReducer.id === upload.id ? (
+                <>
+                  <li>
+                    <input
 
-                        type="text"
-                        value={editReducer.sample_name}
-                        onChange={(e) => handleInputChange(e, upload.id)}
-                      />
+                      type="text"
+                      value={editReducer.sample_name}
+                      onChange={(e) => handleInputChange(e, upload.id)}
+                    />
+                  </li>
+                  <li>
+                    <audio controls src={upload.audio_URL} className="visible-audio" />
+                  </li>
+                  <button onClick={handleSaveClick}>Save</button>
+                </>
+              ) : (
+                <>
+                  <li className="sample-name">
+                  <a href="#"onClick={(e) => handleSamplePlay(e, upload.audio_URL)}>
+                    <img src="../images/play-icon.png" className="play-icon"/> {upload.sample_name}</a>
                     </li>
-                    <li>
-                      <audio controls src={upload.audio_URL} className="visible-audio" />
-                    </li>
-                    <button onClick={handleSaveClick}>Save</button>
-                  </>
-                ) : (
-                  <>
-                    <li className="sample-name">{upload.sample_name}</li>
-                    <li>
-                      <audio controls src={upload.audio_URL} />
-                    </li>
-                    <button className="crud-buttons" onClick={() => handleSampleSelect(upload.audio_URL)}>🎹</button>
-                    <button className="crud-buttons" onClick={() => handleEditClick(upload)}>✍️</button>
-                    <button className="crud-buttons" onClick={() => handleDelete(upload.id)}>🗑</button>
-                  </>
-                )}
-              </ul>
-            ))}
-          </div>
-        )}
+              
+                  <li>
+                    <audio controls src={upload.audio_URL} />
+                  </li>
+                  <button className="use-saved-button" onClick={() => handleSampleSelect(upload.audio_URL)}>🎹</button>
+                  <span className="use-label">use</span>
+                  <button className="edit-saved-button" onClick={() => handleEditClick(upload)}><img src="../images/edit-icon.png" className="edit-icon"/></button>
+                  <span className="edit-label">edit</span>
+                  <button className="delete-saved-button" onClick={() => handleDelete(upload.id)}><img src="../images/delete-icon.png" className="delete-icon"/></button>
+                  <span className="delete-label">delete</span>
+                </>
+              )}
+            </ul>
+          ))}
+        </div>
+      )}
 
-</> 
-      
+    </>
+
   );
 }
 

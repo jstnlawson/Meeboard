@@ -15,9 +15,9 @@ div {
     display: grid;
 }
 
-button {
-    animation: click-animation 0.3s ;
-  }
+a {
+    color: #202020;
+}
 
 .blurred {
     filter: blur(10px);
@@ -28,7 +28,7 @@ button {
     grid-template: repeat(5, 1fr) / repeat(11, 1fr);
     justify-self: center;
     width: 600px;
-    height: 100px;
+    height: 110px;
     background-color: #dda6ae;
 }
 
@@ -49,7 +49,7 @@ button {
     border-radius: 50%;
     height: 50px;
     width: 50px;
-    margin-top: 3px;
+    margin-top: 10px;
 } 
 
 .record-button.active {
@@ -82,7 +82,7 @@ button {
     border-radius: 5px;
     height: 50px;
     width: 50px;
-    margin-top: 3px;
+    margin-top: 10px;
 }
 
 .stop-label {
@@ -95,7 +95,7 @@ button {
 
 .play-button {
     padding: 0;
-    margin-top: 3px;
+    margin-top: 10px;
     grid-area: 2/6/span 3/span 1;
     box-sizing: border-box;
     width: 50px;
@@ -117,7 +117,7 @@ button {
 .pause-button {
     grid-area: 2/8/span 3/span 1;
     padding: 0;
-    margin-top: 3px;
+    margin-top: 10px;
     width: 45px;
     height: 50px;
     border-style: solid;
@@ -137,7 +137,7 @@ button {
 
 .upload-button {
     padding: 0;
-    margin-top: 3px;
+    margin-top: 10px;
     grid-area: 2/10/span 3/span 1;
     box-sizing: border-box;
     width: 50px;
@@ -156,11 +156,55 @@ button {
     color: #202020;
 }
 
+.form-container {
+    grid-area: 5/9/span 1/span 3;
+    position: relative;
+    width: 70px;
+    margin-top: 5px;
+    height: 18px;
+    margin-left: 10px;
+      margin-bottom: 1px;
+    padding-right: 60px;
+      border-radius: 16px;
+      border: 2px solid #DDA6AE;
+      background-color: #DDA6AE;    
+}
+
+.form-container input {
+    font-size: 10px;
+    background: none;
+    border: none;
+}
+
+.form-container .form-cancel-button {
+    position: absolute;
+    right: -0px;
+    
+}
+
+.form-container .form-upload-button {
+    position: absolute;
+    right: 20px;
+    
+}
+
+.form-upload-button, .form-cancel-button {
+    background: none;
+    border: none;
+    
+}
+
+.check-icon, .x-icon, .play-icon {
+    height: 15px;
+    cursor: pointer;
+}
+
 .placeholder-input {
     grid-area: 5/9/span 1/span 3;
-    width: 110px;
+    width: 120px;
     margin-left: 20px;
     margin-top: 5px;
+    margin-bottom: 1px;
     border-radius: 16px;
     border: 2px solid #d89da6;
     background-color: #DDA6AE;
@@ -231,6 +275,7 @@ button {
 .sample-folder-button {
     width: 70px;
     height: 70px;
+    font-size: x-large;
     margin: 0 auto;
     margin-top: 50px;
     position: relative;
@@ -255,6 +300,7 @@ button {
 
 .sample-name {
     color: #202020;
+    grid-area: 1/1/ span 1/span 3;
 }
 
 audio {
@@ -267,24 +313,19 @@ audio {
 
 .samples-modal {
     display: grid;
-    /* background-color: #FFE6E9; */
+    /* grid-template: repeat(2, 1fr) / repeat(3, 1fr); */
+
     background: -webkit-linear-gradient(top, #DDA6AE, #FFE6E9 25%, #ffefef 38%, #D9A3A9 63%, #FFE6E9 87%, #DDA6AE);
 
     justify-self: center;
     justify-content: center;
-    /* float: right;
-    position: fixed; */
-    /* margin-right: 10px; */
+
     color: #202020;
 
     border-radius: 5px;
-    /* position: fixed; */
-    /* top: 50%;
-    left: 50%; 
-     transform: translate(-50%, -50%); */
     
     z-index: 1;
-    height: 500px;
+    height: 100px;
     width: 25vw;
     overflow-y: scroll;
 }
@@ -292,11 +333,51 @@ audio {
 li {
     list-style: none;
 }
+ul {
+    display: grid;
+    grid-template: repeat(3, 1fr) / repeat(3, 1fr);
+    padding: 1px;
+    /* margin: 5px; */
+}
 
-.crud-buttons {
+.crud-buttons, .use-saved-button, .edit-saved-button, .delete-saved-button {
     background: none;
     border: none;
 }
+
+.use-saved-button {
+    grid-area: 2/1/ span 1/span 1;
+}
+.use-label {
+    grid-area: 3/1/ span 1/ span 1;
+    font-size: 10px;
+    justify-self: center;
+}
+
+.edit-saved-button {
+    grid-area: 2/2/ span 1/span 1;
+}
+.edit-label {
+    grid-area: 3/2/ span 1/span 1;
+    font-size: 10px;
+    justify-self: center;
+}
+.edit-icon {
+    height: 15px;
+}
+
+.delete-saved-button {
+    grid-area: 2/3/span 1/ span 1;
+}
+.delete-label {
+    grid-area: 3/3/ span 1/span 1;
+    font-size: 10px;
+    justify-self: center;
+}
+.delete-icon {
+    height: 15px;
+}
+
 
 .audio-element {
     display: none;
