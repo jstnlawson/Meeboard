@@ -54,7 +54,7 @@ const AudioRecorder = () => {
   const sampleId = useSelector((state) => state.editReducer.id);
 
   const [showSamples, setShowSamples] = useState(false);
-
+  const [isEditing, setIsEditing] = useState(false);
 
 
   // console.log('uploads in audioRecorder:', uploads)
@@ -168,9 +168,9 @@ const AudioRecorder = () => {
         user_id: userId,
       },
     });
-    
+    setIsEditing(false);
     dispatch({ type: 'FETCH_UPLOADS', payload: userId });
-handleShowSamples(true)
+// handleShowSamples(true)
   //setShowSamples(false);
   };
 
@@ -179,7 +179,7 @@ handleShowSamples(true)
       type: 'EDIT_SAMPLE',
       payload: upload,
     });
-    
+    setIsEditing(true);
   };
 
   const cancelEdit = () => {
@@ -496,7 +496,9 @@ handleShowSamples(true)
         <div className="samples-modal">
           {uploads.map((upload) => (
             <ul key={upload.id}>
-              {editReducer.id === upload.id ? (
+              
+              {editReducer.id === upload.id && isEditing ? (
+                
                 <>
                   <li>
                     <input
@@ -510,6 +512,7 @@ handleShowSamples(true)
                     <audio controls src={upload.audio_URL} className="visible-audio" />
                   </li>
                   <button onClick={handleSaveClick}>Save</button>
+                  
                 </>
               ) : (
                 <>
