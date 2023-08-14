@@ -5,6 +5,9 @@ const uploadRouter = express.Router();
 const pool = require('../modules/pool');
 //create unique name for uploaded file using uuid
 const { v4: uuidv4 } = require('uuid');
+const {
+  rejectUnauthenticated,
+} = require('../modules/authentication-middleware');
 
 require('dotenv').config(); // Load environment variables from .env
 
@@ -20,7 +23,7 @@ const upload = multer({
   storage: multer.memoryStorage(),
 });
 
-uploadRouter.post('/', upload.single('audiofile'), (req, res) => {
+uploadRouter.post('/', rejectUnauthenticated, upload.single('audiofile'), (req, res) => {
   const file = req.file;
   const bucket = 'first-audio-bucket';
   //const key = `${Date.now().toString()}-${file.originalname}`;
@@ -65,7 +68,7 @@ uploadRouter.post('/', upload.single('audiofile'), (req, res) => {
 });
 
 // Add a GET route to fetch user's uploads
-uploadRouter.get('/:id', (req, res) => {
+uploadRouter.get('/:id', rejectUnauthenticated, (req, res) => {
     //console.log("req.user.id:",req.user.id)
    // const userId = req.user.id;
     const userId = req.params.id;
@@ -85,7 +88,7 @@ uploadRouter.get('/:id', (req, res) => {
       });
   });
 
-  uploadRouter.delete('/:id', (req, res) => {
+  uploadRouter.delete('/:id', rejectUnauthenticated, (req, res) => {
     const sampleId = req.params.id;
     const deleteQuery = `DELETE FROM samples WHERE id = $1`;
   
@@ -115,7 +118,7 @@ uploadRouter.get('/:id', (req, res) => {
           });
   });
   
-  uploadRouter.put('/:id', (req, res) => {
+  uploadRouter.put('/:id', rejectUnauthenticated, (req, res) => {
     // Update this single student
     const idToUpdate = req.params.id;
     const sqlText = `UPDATE samples SET sample_name = $1 WHERE id = $2`;

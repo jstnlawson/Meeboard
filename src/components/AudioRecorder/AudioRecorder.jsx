@@ -138,15 +138,7 @@ const AudioRecorder = () => {
     setShowSamples((prevShowSamples) => !prevShowSamples);
   }
 
-  const handleDelete = async (sampleId) => {
-    try {
-      await dispatch({ type: 'DELETE_UPLOAD', payload: sampleId });
-      await new Promise(resolve => setTimeout(resolve, 500));
-      await dispatch({ type: 'FETCH_UPLOADS', payload: userId });
-    } catch (error) {
-      console.error('Error deleting sample:', error);
-    }
-  }
+
 
   const handleInputChange = (event) => {
     dispatch({
@@ -159,26 +151,37 @@ const AudioRecorder = () => {
     });
   };
 
-  const handleSaveClick = () => {
-    dispatch({
-      type: 'EDIT_SAMPLE',
-      payload: {
-        id: sampleId,
-        sample_name: editReducer.sample_name,
-        user_id: userId,
-      },
-    });
-    setIsEditing(false);
-    dispatch({ type: 'FETCH_UPLOADS', payload: userId });
-// handleShowSamples(true)
-  //setShowSamples(false);
+  const handleDelete = async (sampleId) => {
+    try {
+      await dispatch({ type: 'DELETE_UPLOAD', payload: sampleId });
+      await new Promise(resolve => setTimeout(resolve, 500));
+      await dispatch({ type: 'FETCH_UPLOADS', payload: userId });
+    } catch (error) {
+      console.error('Error deleting sample:', error);
+    }
+  }
+
+  const handleSaveClick = async () => {
+    try {
+      await dispatch({
+        type: 'EDIT_SAMPLE',
+        payload: {
+          id: sampleId,
+          sample_name: editReducer.sample_name,
+          user_id: userId,
+        },
+      });
+      await new Promise(resolve => setTimeout(resolve, 250));
+      await dispatch({ type: 'FETCH_UPLOADS', payload: userId });
+      setIsEditing(false);
+    } catch (error) {
+      console.error('Error editing sample:', error);
+    }
+    
   };
 
   const handleEditClick = (upload) => {
-    dispatch({
-      type: 'EDIT_SAMPLE',
-      payload: upload,
-    });
+    dispatch({ type: 'EDIT_SAMPLE', payload: upload });
     setIsEditing(true);
   };
 
@@ -234,7 +237,7 @@ const AudioRecorder = () => {
     const audioElement = new Audio(audioURL);
     audioElement.play();
   };
-  
+
 
   const handleStopAll = () => {
     audioElements.forEach((element) => {
@@ -307,7 +310,7 @@ const AudioRecorder = () => {
     key9: 1.7,
     key10: 1.8,
     key11: 2.0,
-    key12: 2.2,
+    key12: 2.1,
     key13: 2.4,
   }
 
@@ -406,25 +409,23 @@ const AudioRecorder = () => {
       newAudioPlayer.src = "";
     };
   }, [isPlaying, audioSrc]);
-  //keydown
-  useEffect(() => {
-    // Event listener to handle "keydown" 
-    const handleKeyDown = (event) => {
-      if (event.key === "t") {
-        // Check if audioSrc is available 
-        if (audioSrc) {
-          handlePlay();
-        }
-      }
-    };
-
-    document.addEventListener("keydown", handleKeyDown);
-
-    // Clean up by removing the listener 
-    return () => {
-      document.removeEventListener("keydown", handleKeyDown);
-    };
-  }, [audioSrc]);
+  //keydown not currently using
+  // useEffect(() => {
+  //   // Event listener to handle "keydown" 
+  //   const handleKeyDown = (event) => {
+  //     if (event.key === "t") {
+  //       // Check if audioSrc is available 
+  //       if (audioSrc) {
+  //         handlePlay();
+  //       }
+  //     }
+  //   };
+// document.addEventListener("keydown", handleKeyDown);
+// // Clean up by removing the listener 
+    // return () => {
+    //   document.removeEventListener("keydown", handleKeyDown);
+    // };
+  // }, [audioSrc]);
   //fetch on load
   useEffect(() => {
     dispatch({ type: 'FETCH_UPLOADS', payload: userId })
@@ -459,8 +460,8 @@ const AudioRecorder = () => {
               placeholder="sample name"
 
             />
-              <button className="form-upload-button" onClick={uploadAudio}><img src="../images/check-icon.png" className="check-icon"/></button>
-              <button className="form-cancel-button" onClick={() => setShowForm(false)}><img src="../images/x-icon.png" className="x-icon"/></button></>
+              <button className="form-upload-button" onClick={uploadAudio}><img src="../images/check-icon.png" className="check-icon" /></button>
+              <button className="form-cancel-button" onClick={() => setShowForm(false)}><img src="../images/x-icon.png" className="x-icon" /></button></>
             )}
           </div>
 
@@ -496,39 +497,42 @@ const AudioRecorder = () => {
         <div className="samples-modal">
           {uploads.map((upload) => (
             <ul key={upload.id}>
-              
-              {editReducer.id === upload.id && isEditing ? (
-                
-                <>
-                  <li>
-                    <input
 
-                      type="text"
-                      value={editReducer.sample_name}
-                      onChange={(e) => handleInputChange(e, upload.id)}
-                    />
-                  </li>
+              {editReducer.id === upload.id && isEditing ? (
+
+                <>
+                  <div className="edit-container">
+                    <li>
+                      <input
+                        type="text"
+                        value={editReducer.sample_name}
+                        onChange={(e) => handleInputChange(e, upload.id)}
+                        placeholder="sample name"
+
+                      />
+                      <button className="form-upload-button" onClick={handleSaveClick}><img src="../images/check-icon.png" className="check-icon" /></button>
+                      <button className="form-cancel-button" onClick={() => setIsEditing(false)}><img src="../images/x-icon.png" className="x-icon" /></button>
+                    </li>
+                  </div>
                   <li>
                     <audio controls src={upload.audio_URL} className="visible-audio" />
                   </li>
-                  <button onClick={handleSaveClick}>Save</button>
-                  
                 </>
               ) : (
                 <>
                   <li className="sample-name">
-                  <a href="#"onClick={(e) => handleSamplePlay(e, upload.audio_URL)}>
-                    <img src="../images/play-icon.png" className="play-icon"/> {upload.sample_name}</a>
-                    </li>
-              
+                    <a href="#" onClick={(e) => handleSamplePlay(e, upload.audio_URL)}>
+                      <img src="../images/play-icon.png" className="play-icon" /> {upload.sample_name}</a>
+                  </li>
+
                   <li>
                     <audio controls src={upload.audio_URL} />
                   </li>
                   <button className="use-saved-button" onClick={() => handleSampleSelect(upload.audio_URL)}>🎹</button>
                   <span className="use-label">use</span>
-                  <button className="edit-saved-button" onClick={() => handleEditClick(upload)}><img src="../images/edit-icon.png" className="edit-icon"/></button>
+                  <button className="edit-saved-button" onClick={() => handleEditClick(upload)}><img src="../images/edit-icon.png" className="edit-icon" /></button>
                   <span className="edit-label">edit</span>
-                  <button className="delete-saved-button" onClick={() => handleDelete(upload.id)}><img src="../images/delete-icon.png" className="delete-icon"/></button>
+                  <button className="delete-saved-button" onClick={() => handleDelete(upload.id)}><img src="../images/delete-icon.png" className="delete-icon" /></button>
                   <span className="delete-label">delete</span>
                 </>
               )}

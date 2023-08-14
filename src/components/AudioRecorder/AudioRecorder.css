@@ -1,6 +1,8 @@
 
 
-
+button {
+    cursor: pointer;
+}
 
 
 .user-container {
@@ -19,9 +21,10 @@ a {
     color: #202020;
 }
 
-.blurred {
-    filter: blur(10px);
-  }
+input:focus {
+    
+    outline: none; 
+  } 
 
 .control-box {
     display: grid;
@@ -199,15 +202,36 @@ a {
     cursor: pointer;
 }
 
-.placeholder-input {
-    grid-area: 5/9/span 1/span 3;
-    width: 120px;
-    margin-left: 20px;
+.edit-container {
+    display: grid;
+    position: relative;
+    /* width: 70px; */
     margin-top: 5px;
-    margin-bottom: 1px;
-    border-radius: 16px;
-    border: 2px solid #d89da6;
-    background-color: #DDA6AE;
+    height: 18px;
+    margin-left: 10px;
+      margin-bottom: 1px;
+    padding-right: 60px;
+      border-radius: 16px;
+      border: 2px solid #dda6ae00;
+      background-color: #dda6ae00; 
+}
+.edit-container input {
+
+    font-size: 10px;
+    background: none;
+    border: none;
+}
+
+.edit-container .form-cancel-button {
+    /* float: right; */
+    position: absolute;
+    right: -0px;
+    
+}
+
+.edit-container .form-upload-button {
+    position: absolute;
+    right: 20px; 
 }
 
 .distortion-toggle,
@@ -331,6 +355,7 @@ audio {
 }
 
 li {
+    display: grid;
     list-style: none;
 }
 ul {
@@ -341,6 +366,7 @@ ul {
 }
 
 .crud-buttons, .use-saved-button, .edit-saved-button, .delete-saved-button {
+    margin-top: 5px;
     background: none;
     border: none;
 }
