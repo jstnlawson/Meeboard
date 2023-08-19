@@ -3,7 +3,7 @@
 The Meeboard an audio sampler that records any sound you want and plays back your recording at different pitches on the keyboard keys. If you register you can save your files and use them again in the future.
 
 ## Screenshot
-<img src="../public/meeboard.png">
+<img src="./public/meeboard.png">
 <a href = "https://fast-oasis-59176-b290032bbf92.herokuapp.com/#/user">TRY IT!</a>
 <br/>
 
