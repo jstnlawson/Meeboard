@@ -1,6 +1,6 @@
 
 # Meeboard
-The Meeboard an audio sampler that records any sound you want and plays back your recording at different pitches on the keyboard keys. If you register you can save your files and use them again in the future.
+The Meeboard an audio sampler that records any sound you want and plays back your recording at different pitches on the keyboard keys. If you register you can save your files and use them again in the future. The record and playback are done using the React Audio Analyser. The pitch shift, distortion, and delay effects are all achieved with the use of Web Audio API.
 
 ## Screenshot
 <img src="./public/meeboard.png">
@@ -21,14 +21,16 @@ The Meeboard an audio sampler that records any sound you want and plays back you
 * [Node.js](https://nodejs.org/en/)
 * [PostrgeSQL](https://www.postgresql.org/)
 * [Nodemon](https://nodemon.io/)
+* I used an AWS s3 bucket for cloud storage.
 
 
 ### **Installation**
 
 1. Clone the repository to your local computer
 1. Start postgres if not running already by using `brew services start postgresql`
-1. Create a database named `playwme`
+1. Create a database named `meeboard`
 1. Run `database.sql` file
+1. npm install react-audio-analyser
 1. Open two terminal windows
 1. Run `npm run server`
 1. Run `npm run client`
@@ -45,6 +47,3 @@ The Meeboard an audio sampler that records any sound you want and plays back you
 
 * Thanks to [Prime Digital Academy](www.primeacademy.io) staff and especially my instructor Emma Stout for giving me the getting me to the point where I could build this app.
 <br/> 
-
-
-<p align="right">(<a href="#top">back to top</a>)</p>
