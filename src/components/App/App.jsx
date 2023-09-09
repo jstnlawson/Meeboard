@@ -14,9 +14,9 @@ import Footer from '../Footer/Footer';
 import ProtectedRoute from '../ProtectedRoute/ProtectedRoute';
 
 import UserPage from '../UserPage/UserPage';
-import LandingPage from '../LandingPage/LandingPage';
 import LoginPage from '../LoginPage/LoginPage';
 import RegisterPage from '../RegisterPage/RegisterPage';
+import Tutorial from '../Tutorial/Tutorial';
 
 import './App.css';
 
@@ -37,7 +37,7 @@ function App() {
         <Route exact path="/login" component={LoginPage} />
         <Route exact path="/registration" component={RegisterPage} />
         <Route exact path="/user" component={UserPage} />
-
+        <Route exact path="/tutorial" component={Tutorial} />
         {/* If none of the other routes matched, we will show a 404. */}
         <Route>
           <h1>404</h1>

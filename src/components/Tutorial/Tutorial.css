@@ -1,0 +1,17 @@
+.tutorial-text {
+    color: black;
+    font-size: small;
+}
+
+.tutorial-box {
+    padding: 10px;
+    position: absolute; /* Position absolutely within the relative container */
+  top: 100%; /* Adjust the top position as needed */
+  left: 0; /* Adjust the left position as needed */
+  background-color: rgb(255, 255, 255);
+  border-radius: 10px;
+  padding: 10px;
+  border: 1px solid #ccc;
+  z-index: 999; /* Set a high z-index to make it appear above other elements */
+  width: 200px; /* Adjust the width as needed */
+}

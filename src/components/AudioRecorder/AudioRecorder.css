@@ -37,6 +37,7 @@ input:focus {
     width: 600px;
     height: 110px;
     background-color: #dda6ae;
+    position: relative;
 }
 
 .audio-recorder {
@@ -58,6 +59,7 @@ input:focus {
     height: 50px;
     width: 50px;
     margin-top: 15px;
+    position: relative;
 } 
 
 .record-button.active {
