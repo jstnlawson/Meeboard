@@ -98,6 +98,11 @@ const AudioRecorder = () => {
 
   const uploadAudio = async () => {
     console.log("userId is:", userId);
+    if (!userId) {
+      // User is not logged in, display an alert
+      alert("You must be logged in to save your audio files!");
+      return;
+    }
     if (!audioBlob) return;
 
     if (!sampleName || !showForm) {

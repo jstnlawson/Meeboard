@@ -1,4 +1,8 @@
 
+.user-container > * {
+    margin: 0;
+    padding: 0;
+}
 
 button {
     cursor: pointer;
@@ -36,6 +40,7 @@ input:focus {
 }
 
 .audio-recorder {
+    
     display: grid;
     justify-content: center;
     border-radius: 5px 5px 0 0;
@@ -52,7 +57,7 @@ input:focus {
     border-radius: 50%;
     height: 50px;
     width: 50px;
-    margin-top: 10px;
+    margin-top: 15px;
 } 
 
 .record-button.active {
@@ -85,7 +90,7 @@ input:focus {
     border-radius: 5px;
     height: 50px;
     width: 50px;
-    margin-top: 10px;
+    margin-top: 15px;
 }
 
 .stop-label {
@@ -98,7 +103,7 @@ input:focus {
 
 .play-button {
     padding: 0;
-    margin-top: 10px;
+    margin-top: 15px;
     grid-area: 2/6/span 3/span 1;
     box-sizing: border-box;
     width: 50px;
@@ -120,7 +125,7 @@ input:focus {
 .pause-button {
     grid-area: 2/8/span 3/span 1;
     padding: 0;
-    margin-top: 10px;
+    margin-top: 15px;
     width: 45px;
     height: 50px;
     border-style: solid;
@@ -140,7 +145,7 @@ input:focus {
 
 .upload-button {
     padding: 0;
-    margin-top: 10px;
+    margin-top: 15px;
     grid-area: 2/10/span 3/span 1;
     box-sizing: border-box;
     width: 50px;
@@ -301,7 +306,7 @@ input:focus {
     height: 70px;
     font-size: x-large;
     margin: 0 auto;
-    margin-top: 50px;
+    margin-top: 100px;
     position: relative;
     /* background-color: #708090; */
     background: -webkit-linear-gradient(top, #DDA6AE, #FFE6E9 25%, #ffefef 38%, #D9A3A9 63%, #FFE6E9 87%, #DDA6AE);
