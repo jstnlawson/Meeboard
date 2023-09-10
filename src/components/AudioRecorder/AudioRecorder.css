@@ -93,6 +93,7 @@ input:focus {
     height: 50px;
     width: 50px;
     margin-top: 15px;
+    position: relative;
 }
 
 .stop-label {
