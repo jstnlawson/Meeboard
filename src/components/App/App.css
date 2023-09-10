@@ -1,8 +1,4 @@
-/* html,
-body,
-#react-root {
-  height: 100%;
-} */
+
 
 body {
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -19,20 +15,12 @@ img {
   max-width: 100%;
 }
 
-/* --------------------------------------------------------------------------------
-Container
--------------------------------------------------------------------------------- */
-
-/* .container {
-  padding: 20px;
-} */
-
 
 /* --------------------------------------------------------------------------------
 Alert
 -------------------------------------------------------------------------------- */
 
-/* .alert {
+.alert {
   box-sizing: border-box;
   padding: 15px 10px;
   margin: 15px 0;
@@ -41,21 +29,44 @@ Alert
   border-radius: 3px;
   color: #e01616;
   font-size: 0.8rem;
-} */
+}
 
 /* --------------------------------------------------------------------------------
 Form Treatment
 -------------------------------------------------------------------------------- */
 
-/* .formPanel {
+.formPanel {
+  display: flex;
+  flex-direction: column;
+  
+  
   box-sizing: border-box;
-  width: 400px;
+  width: 350px;
   max-width: 100%;
   padding: 25px;
   margin: 0 auto 20px;
   background-color: #efefef;
-  border-radius: 3px;
-  box-shadow: 0 1px 2px rgb(0, 0, 0, 0.4);
-} */
+  background: -webkit-linear-gradient(top, #DDA6AE, #FFE6E9 25%, #ffefef 38%, #D9A3A9 63%, #FFE6E9 87%, #DDA6AE);
 
+  border-radius: 10px;
+  box-shadow: 0 1px 2px rgb(0, 0, 0, 0.4);
+}
+
+.btn {
+  display: flex;
+    justify-self: center;
+    margin-top: 10px;
+    border: solid 1px #FFE6E9;
+    border-radius: 10px;
+    color: #FFE6E9;
+    padding: 10px;
+    background-color: #202020;
+}
+
+.text-input {
+  height: 30px;
+  width: 200px;
+  margin: 5px;
+  border: none;
+}
 
